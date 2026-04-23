@@ -47,131 +47,193 @@
             sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads">
     </iframe>
 
-    <script src="js/fingerprint.js"></script>
-    <script src="js/api.js"></script>
-    <script>
-        /**
-         * Main Site Controller.
-         * Simplified: No more auth in iframes.
-         *
-         * Flow:
-         * 1. Page load → check device token → auto-login or show buttons
-         * 2. Signup button → redirect to signup.smartclass.com.ly
-         * 3. Login button → redirect to login.smartclass.com.ly
-         * 4. Auto-login → iframe server with /auto-login?token=...&username=...
-         * 5. Listen for messages from iframe (logout, force_logout)
-         */
+<script src="js/fingerprint.js"></script>
+<script src="js/api.js"></script>
+<script>
+    const SIGNUP_SITE = 'https://signup.smartclass.com.ly';
+    const LOGIN_SITE = 'https://login.smartclass.com.ly';
 
-        const SIGNUP_SITE = 'https://signup.smartclass.com.ly';
-        const LOGIN_SITE = 'https://login.smartclass.com.ly';
+    let _currentToken = null;
 
-        let _currentToken = null;
+    function showLoading(msg) {
+        const el = document.getElementById('loading-screen');
+        if (el) {
+            el.style.display = 'flex';
+            const p = el.querySelector('p');
+            if (p && msg) p.textContent = msg;
+        }
+    }
 
-        function showLoading(msg) {
-            const el = document.getElementById('loading-screen');
-            if (el) {
-                el.style.display = 'flex';
-                const p = el.querySelector('p');
-                if (p && msg) p.textContent = msg;
+    function hideLoading() {
+        const el = document.getElementById('loading-screen');
+        if (el) el.style.display = 'none';
+    }
+
+    function showMain() {
+        document.getElementById('main-container').style.display = 'flex';
+        document.getElementById('app-frame').style.display = 'none';
+    }
+
+    function showApp(url) {
+        document.getElementById('main-container').style.display = 'none';
+        document.getElementById('loading-screen').style.display = 'none';
+        var frame = document.getElementById('app-frame');
+        frame.src = url;
+        frame.style.display = 'block';
+    }
+
+    function showError(msg) {
+        var el = document.getElementById('error-msg');
+        if (el) {
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(function() { el.style.display = 'none'; }, 8000);
+        }
+    }
+
+    function goSignup() {
+        window.location.href = SIGNUP_SITE;
+    }
+
+    function goLogin() {
+        window.location.href = LOGIN_SITE;
+    }
+
+    /**
+     * Get the best available token:
+     * 1. From URL params (passed by signup/login sites) - MOST RELIABLE
+     * 2. From localStorage (same domain, previous visit)
+     * 3. Generate new (first visit, no redirect)
+     */
+    function getBestToken() {
+        var params = new URLSearchParams(window.location.search);
+        var urlToken = params.get('token');
+
+        if (urlToken && urlToken.trim()) {
+            console.log('Using token from URL:', urlToken);
+            // Save it locally so future visits on this domain use the same token
+            try {
+                localStorage.setItem('sc_device_token', urlToken.trim());
+            } catch(e) {}
+            return urlToken.trim();
+        }
+
+        // Try localStorage (same domain, previous visit)
+        try {
+            var stored = localStorage.getItem('sc_device_token');
+            if (stored && stored.trim()) {
+                console.log('Using token from localStorage:', stored);
+                return stored.trim();
             }
+        } catch(e) {}
+
+        // Generate new (first visit ever, no redirect from signup/login)
+        var newToken = DeviceFingerprint.getToken();
+        console.log('Generated new token:', newToken);
+        try {
+            localStorage.setItem('sc_device_token', newToken);
+        } catch(e) {}
+        return newToken;
+    }
+
+    async function init() {
+        showLoading('جاري التحقق...');
+
+        // Get token (from URL if redirected from signup/login, or from localStorage)
+        _currentToken = getBestToken();
+        console.log('Final token:', _currentToken);
+
+        // Check URL for username (direct redirect from signup/login)
+        var params = new URLSearchParams(window.location.search);
+        var urlUsername = params.get('username');
+
+        // Clean URL (remove token and username from address bar)
+        if (params.has('token') || params.has('username')) {
+            var cleanUrl = window.location.origin + window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
         }
 
-        function hideLoading() {
-            const el = document.getElementById('loading-screen');
-            if (el) el.style.display = 'none';
-        }
-
-        function showMain() {
-            document.getElementById('main-container').style.display = 'flex';
-            document.getElementById('app-frame').style.display = 'none';
-        }
-
-        function showApp(url) {
-            document.getElementById('main-container').style.display = 'none';
-            document.getElementById('loading-screen').style.display = 'none';
-            const frame = document.getElementById('app-frame');
-            frame.src = url;
-            frame.style.display = 'block';
-        }
-
-        function showError(msg) {
-            const el = document.getElementById('error-msg');
-            if (el) {
-                el.textContent = msg;
-                el.style.display = 'block';
-                setTimeout(function() { el.style.display = 'none'; }, 8000);
-            }
-        }
-
-        // Simple redirects - no more iframe auth
-        function goSignup() {
-            window.location.href = SIGNUP_SITE;
-        }
-
-        function goLogin() {
-            window.location.href = LOGIN_SITE;
-        }
-
-        // Auto-login check on page load
-        async function init() {
-            showLoading('جاري التحقق...');
-
-            _currentToken = DeviceFingerprint.getToken();
-            console.log('Device token:', _currentToken);
+        // If we have username from URL, try direct auto-login (skip Main DB check)
+        if (urlUsername && urlUsername.trim()) {
+            console.log('Direct redirect with username:', urlUsername);
 
             try {
-                const result = await API.checkToken(_currentToken);
+                // We know the user just logged in/signed up, look up their server
+                var lookupResult = await API.lookupUser(urlUsername.trim());
 
-                if (result.ok && result.found) {
-                    console.log('Auto-login:', result.username, 'on server', result.server_num);
-                    const autoUrl = result.server_url + '/auto-login?token=' +
+                if (lookupResult.ok && lookupResult.found) {
+                    console.log('Direct auto-login:', urlUsername, 'on server', lookupResult.server_num);
+
+                    var autoUrl = lookupResult.server_url + '/auto-login?token=' +
                         encodeURIComponent(_currentToken) +
-                        '&username=' + encodeURIComponent(result.username);
+                        '&username=' + encodeURIComponent(urlUsername.trim());
 
                     showApp(autoUrl);
                     return;
                 }
             } catch (e) {
-                console.error('Token check failed:', e);
+                console.error('Direct lookup failed:', e);
             }
+        }
 
-            // No user found - show main page with signup/login buttons
-            hideLoading();
+        // Normal flow: check token in Main DB
+        try {
+            var result = await API.checkToken(_currentToken);
+
+            if (result.ok && result.found) {
+                console.log('Auto-login via token:', result.username, 'on server', result.server_num);
+
+                var autoUrl = result.server_url + '/auto-login?token=' +
+                    encodeURIComponent(_currentToken) +
+                    '&username=' + encodeURIComponent(result.username);
+
+                showApp(autoUrl);
+                return;
+            }
+        } catch (e) {
+            console.error('Token check failed:', e);
+        }
+
+        // Nothing found - show buttons
+        hideLoading();
+        showMain();
+    }
+
+    // Listen for messages from iframe
+    window.addEventListener('message', function(event) {
+        var origin = event.origin || '';
+        var isValid = origin.includes('serverclass') && origin.includes('hf.space');
+        if (!isValid) return;
+
+        var data = event.data;
+        if (!data || typeof data !== 'object') return;
+
+        console.log('Message from server:', data.type);
+
+        if (data.type === 'force_logout') {
+            document.getElementById('app-frame').src = '';
+            document.getElementById('app-frame').style.display = 'none';
+            window.location.href = LOGIN_SITE + '?reason=force_logout&msg=' +
+                encodeURIComponent(data.message || 'تم تسجيل الدخول من جهاز آخر');
+        }
+
+        if (data.type === 'logout') {
+            document.getElementById('app-frame').src = '';
+            document.getElementById('app-frame').style.display = 'none';
+            // Clear stored token on logout
+            try {
+                localStorage.removeItem('sc_device_token');
+            } catch(e) {}
             showMain();
         }
+    });
 
-        // Listen for messages from iframe (logout only - no more auth messages)
-        window.addEventListener('message', function(event) {
-            const origin = event.origin || '';
-            const isValidOrigin = origin.includes('serverclass') && origin.includes('hf.space');
-
-            if (!isValidOrigin) return;
-
-            const data = event.data;
-            if (!data || typeof data !== 'object') return;
-
-            console.log('Message from server:', data.type);
-
-            if (data.type === 'force_logout') {
-                document.getElementById('app-frame').src = '';
-                document.getElementById('app-frame').style.display = 'none';
-                window.location.href = LOGIN_SITE + '?reason=force_logout&msg=' +
-                    encodeURIComponent(data.message || 'تم تسجيل الدخول من جهاز آخر');
-            }
-
-            if (data.type === 'logout') {
-                document.getElementById('app-frame').src = '';
-                document.getElementById('app-frame').style.display = 'none';
-                showMain();
-            }
-        });
-
-        // Start
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
-    </script>
+    // Start
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+</script>
 </body>
 </html>
