@@ -50,22 +50,22 @@
 <script src="js/fingerprint.js"></script>
 <script src="js/api.js"></script>
 <script>
-    const SIGNUP_SITE = 'https://signup.smartclass.com.ly';
-    const LOGIN_SITE = 'https://login.smartclass.com.ly';
+    const SIGNUP_SITE = 'https://signup.smartclass.info.gf';
+    const LOGIN_SITE = 'https://login.smartclass.info.gf';
 
     let _currentToken = null;
 
     function showLoading(msg) {
-        const el = document.getElementById('loading-screen');
+        var el = document.getElementById('loading-screen');
         if (el) {
             el.style.display = 'flex';
-            const p = el.querySelector('p');
+            var p = el.querySelector('p');
             if (p && msg) p.textContent = msg;
         }
     }
 
     function hideLoading() {
-        const el = document.getElementById('loading-screen');
+        var el = document.getElementById('loading-screen');
         if (el) el.style.display = 'none';
     }
 
@@ -99,107 +99,290 @@
         window.location.href = LOGIN_SITE;
     }
 
-    /**
-     * Get the best available token:
-     * 1. From URL params (passed by signup/login sites) - MOST RELIABLE
-     * 2. From localStorage (same domain, previous visit)
-     * 3. Generate new (first visit, no redirect)
-     */
+    // ═══════════════════════════════════════════════════
+    //  TOKEN STORAGE - Multiple layers for Safari safety
+    // ═══════════════════════════════════════════════════
+
+    function saveToken(token) {
+        if (!token) return;
+
+        // Layer 1: localStorage
+        try {
+            localStorage.setItem('sc_device_token', token);
+        } catch(e) {}
+
+        // Layer 2: sessionStorage (survives page refresh, not tab close)
+        try {
+            sessionStorage.setItem('sc_device_token', token);
+        } catch(e) {}
+
+        // Layer 3: Cookie on current domain
+        try {
+            var expires = new Date();
+            expires.setFullYear(expires.getFullYear() + 1);
+            document.cookie = 'sc_device_token=' + token +
+                ';expires=' + expires.toUTCString() +
+                ';path=/;SameSite=Lax;Secure';
+        } catch(e) {}
+    }
+
+    function loadToken() {
+        var token = null;
+
+        // Try localStorage
+        try {
+            token = localStorage.getItem('sc_device_token');
+            if (token && token.trim()) return token.trim();
+        } catch(e) {}
+
+        // Try sessionStorage
+        try {
+            token = sessionStorage.getItem('sc_device_token');
+            if (token && token.trim()) return token.trim();
+        } catch(e) {}
+
+        // Try cookie
+        try {
+            var match = document.cookie.match(/(^| )sc_device_token=([^;]+)/);
+            if (match && match[2] && match[2].trim()) return match[2].trim();
+        } catch(e) {}
+
+        return null;
+    }
+
+    function clearAllTokens() {
+        try { localStorage.removeItem('sc_device_token'); } catch(e) {}
+        try { sessionStorage.removeItem('sc_device_token'); } catch(e) {}
+        try {
+            document.cookie = 'sc_device_token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+        } catch(e) {}
+    }
+
+    function saveUserInfo(username, serverUrl, serverNum) {
+        // Save user info so we can auto-login even if Main DB is slow
+        try {
+            localStorage.setItem('sc_username', username);
+            localStorage.setItem('sc_server_url', serverUrl);
+            localStorage.setItem('sc_server_num', String(serverNum));
+        } catch(e) {}
+        try {
+            sessionStorage.setItem('sc_username', username);
+            sessionStorage.setItem('sc_server_url', serverUrl);
+            sessionStorage.setItem('sc_server_num', String(serverNum));
+        } catch(e) {}
+    }
+
+    function loadUserInfo() {
+        var username = null;
+        var serverUrl = null;
+        var serverNum = null;
+
+        try {
+            username = localStorage.getItem('sc_username');
+            serverUrl = localStorage.getItem('sc_server_url');
+            serverNum = localStorage.getItem('sc_server_num');
+        } catch(e) {}
+
+        if (!username) {
+            try {
+                username = sessionStorage.getItem('sc_username');
+                serverUrl = sessionStorage.getItem('sc_server_url');
+                serverNum = sessionStorage.getItem('sc_server_num');
+            } catch(e) {}
+        }
+
+        if (username && serverUrl) {
+            return { username: username, serverUrl: serverUrl, serverNum: serverNum };
+        }
+        return null;
+    }
+
+    function clearUserInfo() {
+        try {
+            localStorage.removeItem('sc_username');
+            localStorage.removeItem('sc_server_url');
+            localStorage.removeItem('sc_server_num');
+        } catch(e) {}
+        try {
+            sessionStorage.removeItem('sc_username');
+            sessionStorage.removeItem('sc_server_url');
+            sessionStorage.removeItem('sc_server_num');
+        } catch(e) {}
+    }
+
+    // ═══════════════════════════════════════════════════
+    //  GET BEST TOKEN
+    // ═══════════════════════════════════════════════════
+
     function getBestToken() {
+        // Priority 1: URL params (from signup/login redirect)
         var params = new URLSearchParams(window.location.search);
         var urlToken = params.get('token');
 
         if (urlToken && urlToken.trim()) {
-            console.log('Using token from URL:', urlToken);
-            // Save it locally so future visits on this domain use the same token
-            try {
-                localStorage.setItem('sc_device_token', urlToken.trim());
-            } catch(e) {}
+            console.log('Token from URL:', urlToken.trim());
+            saveToken(urlToken.trim());
             return urlToken.trim();
         }
 
-        // Try localStorage (same domain, previous visit)
-        try {
-            var stored = localStorage.getItem('sc_device_token');
-            if (stored && stored.trim()) {
-                console.log('Using token from localStorage:', stored);
-                return stored.trim();
-            }
-        } catch(e) {}
+        // Priority 2: Stored token (localStorage/sessionStorage/cookie)
+        var stored = loadToken();
+        if (stored) {
+            console.log('Token from storage:', stored);
+            return stored;
+        }
 
-        // Generate new (first visit ever, no redirect from signup/login)
+        // Priority 3: Generate new
         var newToken = DeviceFingerprint.getToken();
         console.log('Generated new token:', newToken);
-        try {
-            localStorage.setItem('sc_device_token', newToken);
-        } catch(e) {}
+        saveToken(newToken);
         return newToken;
     }
+
+    // ═══════════════════════════════════════════════════
+    //  AUTO-LOGIN FUNCTION
+    // ═══════════════════════════════════════════════════
+
+    function doAutoLogin(username, serverUrl, serverNum, token) {
+        console.log('Auto-login:', username, 'on server', serverNum);
+
+        // Save for future visits
+        saveToken(token);
+        saveUserInfo(username, serverUrl, serverNum);
+
+        var autoUrl = serverUrl + '/auto-login?token=' +
+            encodeURIComponent(token) +
+            '&username=' + encodeURIComponent(username);
+
+        showApp(autoUrl);
+    }
+
+    // ═══════════════════════════════════════════════════
+    //  INIT
+    // ═══════════════════════════════════════════════════
 
     async function init() {
         showLoading('جاري التحقق...');
 
-        // Get token (from URL if redirected from signup/login, or from localStorage)
         _currentToken = getBestToken();
         console.log('Final token:', _currentToken);
 
         // Check URL for username (direct redirect from signup/login)
         var params = new URLSearchParams(window.location.search);
         var urlUsername = params.get('username');
+        var urlToken = params.get('token');
 
-        // Clean URL (remove token and username from address bar)
+        // Clean URL
         if (params.has('token') || params.has('username')) {
             var cleanUrl = window.location.origin + window.location.pathname;
             window.history.replaceState({}, document.title, cleanUrl);
         }
 
-        // If we have username from URL, try direct auto-login (skip Main DB check)
+        // ── METHOD 1: Direct redirect from signup/login with username ──
         if (urlUsername && urlUsername.trim()) {
-            console.log('Direct redirect with username:', urlUsername);
+            console.log('Method 1: Direct redirect with username:', urlUsername);
 
             try {
-                // We know the user just logged in/signed up, look up their server
                 var lookupResult = await API.lookupUser(urlUsername.trim());
 
                 if (lookupResult.ok && lookupResult.found) {
-                    console.log('Direct auto-login:', urlUsername, 'on server', lookupResult.server_num);
-
-                    var autoUrl = lookupResult.server_url + '/auto-login?token=' +
-                        encodeURIComponent(_currentToken) +
-                        '&username=' + encodeURIComponent(urlUsername.trim());
-
-                    showApp(autoUrl);
+                    doAutoLogin(
+                        urlUsername.trim(),
+                        lookupResult.server_url,
+                        lookupResult.server_num,
+                        _currentToken
+                    );
                     return;
                 }
             } catch (e) {
-                console.error('Direct lookup failed:', e);
+                console.error('Method 1 lookup failed:', e);
+            }
+
+            // Lookup failed but we have username - try saved server info
+            var savedInfo = loadUserInfo();
+            if (savedInfo && savedInfo.username === urlUsername.trim()) {
+                console.log('Method 1 fallback: using saved server info');
+                doAutoLogin(
+                    savedInfo.username,
+                    savedInfo.serverUrl,
+                    savedInfo.serverNum,
+                    _currentToken
+                );
+                return;
             }
         }
 
-        // Normal flow: check token in Main DB
+        // ── METHOD 2: Check token in Main DB ──
         try {
+            console.log('Method 2: Checking token in Main DB...');
             var result = await API.checkToken(_currentToken);
 
             if (result.ok && result.found) {
-                console.log('Auto-login via token:', result.username, 'on server', result.server_num);
-
-                var autoUrl = result.server_url + '/auto-login?token=' +
-                    encodeURIComponent(_currentToken) +
-                    '&username=' + encodeURIComponent(result.username);
-
-                showApp(autoUrl);
+                doAutoLogin(
+                    result.username,
+                    result.server_url,
+                    result.server_num,
+                    _currentToken
+                );
                 return;
             }
+            console.log('Method 2: Token not found in Main DB');
         } catch (e) {
-            console.error('Token check failed:', e);
+            console.error('Method 2 failed:', e);
         }
 
-        // Nothing found - show buttons
+        // ── METHOD 3: Use saved user info (Safari fallback) ──
+        var savedInfo = loadUserInfo();
+        if (savedInfo && savedInfo.username && savedInfo.serverUrl) {
+            console.log('Method 3: Using saved user info:', savedInfo.username);
+
+            // Verify user still exists on that server
+            try {
+                var verifyResult = await API.lookupUser(savedInfo.username);
+
+                if (verifyResult.ok && verifyResult.found) {
+                    // Re-link token in Main DB (it might have been lost)
+                    try {
+                        await API.linkToken(savedInfo.username, _currentToken);
+                        console.log('Re-linked token in Main DB');
+                    } catch(e) {
+                        console.warn('Re-link failed:', e);
+                    }
+
+                    doAutoLogin(
+                        savedInfo.username,
+                        verifyResult.server_url,
+                        verifyResult.server_num,
+                        _currentToken
+                    );
+                    return;
+                }
+            } catch (e) {
+                console.error('Method 3 verify failed:', e);
+            }
+
+            // Even verify failed - try direct auto-login anyway
+            // The server will redirect to login if user doesn't exist
+            console.log('Method 3 fallback: trying direct auto-login');
+            doAutoLogin(
+                savedInfo.username,
+                savedInfo.serverUrl,
+                savedInfo.serverNum,
+                _currentToken
+            );
+            return;
+        }
+
+        // ── NOTHING WORKED: Show login/signup buttons ──
+        console.log('No auto-login possible, showing buttons');
         hideLoading();
         showMain();
     }
 
-    // Listen for messages from iframe
+    // ═══════════════════════════════════════════════════
+    //  MESSAGE LISTENER
+    // ═══════════════════════════════════════════════════
+
     window.addEventListener('message', function(event) {
         var origin = event.origin || '';
         var isValid = origin.includes('serverclass') && origin.includes('hf.space');
@@ -213,6 +396,8 @@
         if (data.type === 'force_logout') {
             document.getElementById('app-frame').src = '';
             document.getElementById('app-frame').style.display = 'none';
+            clearAllTokens();
+            clearUserInfo();
             window.location.href = LOGIN_SITE + '?reason=force_logout&msg=' +
                 encodeURIComponent(data.message || 'تم تسجيل الدخول من جهاز آخر');
         }
@@ -220,10 +405,8 @@
         if (data.type === 'logout') {
             document.getElementById('app-frame').src = '';
             document.getElementById('app-frame').style.display = 'none';
-            // Clear stored token on logout
-            try {
-                localStorage.removeItem('sc_device_token');
-            } catch(e) {}
+            clearAllTokens();
+            clearUserInfo();
             showMain();
         }
     });
