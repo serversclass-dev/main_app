@@ -801,7 +801,23 @@
                 clearUserInfo();
                 showView('main');
             }
-        });
+
+            if (data.type === 'auto_login_failed') {
+                console.log('Auto-login failed:', data.reason);
+                document.getElementById('app-frame').src = '';
+                document.getElementById('app-frame').style.display = 'none';
+                clearTokens();
+                clearUserInfo();
+                showView('main');
+            }
+
+            if (data.type === 'session_expired') {
+                console.log('Session expired, re-trying auto-login...');
+                document.getElementById('app-frame').src = '';
+                document.getElementById('app-frame').style.display = 'none';
+                init();
+            }
+        })
 
         // ═══════════════════════════════════════
         //  INIT - Auto-login check on page load
