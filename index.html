@@ -9,414 +9,869 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Loading Screen -->
+
+    <!-- ══════════════════════════════════════════ -->
+    <!--  VIEW 1: Loading Screen                    -->
+    <!-- ══════════════════════════════════════════ -->
     <div id="loading-screen" class="loading-screen">
         <div class="loading-content">
             <div class="spinner"></div>
-            <p>جاري التحقق...</p>
+            <p id="loading-text">جاري التحقق...</p>
         </div>
     </div>
 
-    <!-- Main Container (shown when not auto-logged in) -->
+    <!-- ══════════════════════════════════════════ -->
+    <!--  VIEW 2: Main Buttons (signup/login)       -->
+    <!-- ══════════════════════════════════════════ -->
     <div id="main-container" class="main-container" style="display:none;">
-        <!-- Hero Section -->
         <div class="hero">
             <div class="hero-content">
                 <h1 class="logo-text">🎓 ServerClass</h1>
                 <p class="tagline">منصة التعليم الذكي بالذكاء الاصطناعي</p>
             </div>
         </div>
-
-        <!-- Action Buttons -->
         <div class="actions">
-            <button id="btn-signup" class="btn btn-primary btn-lg" onclick="goSignup()">
+            <button class="btn btn-primary btn-lg" onclick="showView('signup')">
                 إنشاء حساب جديد
             </button>
-            <button id="btn-login" class="btn btn-secondary btn-lg" onclick="goLogin()">
+            <button class="btn btn-secondary btn-lg" onclick="showView('login-username')">
                 تسجيل الدخول
             </button>
         </div>
-
-        <!-- Error Message -->
-        <div id="error-msg" class="error-msg" style="display:none;"></div>
+        <div id="main-error" class="error-msg" style="display:none;"></div>
     </div>
 
-    <!-- App iframe (shown when user is authenticated) -->
+    <!-- ══════════════════════════════════════════ -->
+    <!--  VIEW 3: Signup Form                       -->
+    <!-- ══════════════════════════════════════════ -->
+    <div id="signup-container" class="login-container" style="display:none;">
+        <div class="login-card">
+            <h2>🎓 إنشاء حساب جديد</h2>
+            <p class="subtitle">أنشئ حسابك في ServerClass</p>
+
+            <div id="signup-error" class="status-msg error" style="display:none;"></div>
+
+            <div class="form-group">
+                <label for="signup-username">اسم المستخدم</label>
+                <input type="text" id="signup-username" placeholder="أدخل اسم المستخدم (3 أحرف على الأقل)"
+                       autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label for="signup-password">كلمة المرور</label>
+                <input type="password" id="signup-password" placeholder="كلمة المرور (6 أحرف على الأقل)">
+            </div>
+
+            <div class="form-group">
+                <label for="signup-confirm">تأكيد كلمة المرور</label>
+                <input type="password" id="signup-confirm" placeholder="أعد كتابة كلمة المرور">
+            </div>
+
+            <div class="form-group">
+                <label>نوع الدراسة</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="student_type" value="علمي" checked>
+                        <span>علمي</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="student_type" value="أدبي">
+                        <span>أدبي</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button id="btn-to-verify" class="btn btn-primary" onclick="goToVerification()">
+                    التالي - التحقق من تيليجرام
+                </button>
+            </div>
+
+            <div class="form-footer">
+                <p>لديك حساب بالفعل؟ <a href="#" onclick="showView('login-username');return false;">تسجيل الدخول</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!--  VIEW 4: Telegram Verification             -->
+    <!-- ══════════════════════════════════════════ -->
+    <div id="verify-container" class="login-container" style="display:none;">
+        <div class="login-card">
+            <h2>📱 التحقق من تيليجرام</h2>
+            <p class="subtitle">أدخل رمز التحقق من بوت تيليجرام</p>
+
+            <div id="verify-error" class="status-msg error" style="display:none;"></div>
+
+            <div class="form-group">
+                <label for="verify-code">رمز التحقق</label>
+                <input type="text" id="verify-code" placeholder="أدخل الرمز من تيليجرام"
+                       autocomplete="one-time-code"
+                       onkeypress="if(event.key==='Enter') submitSignup()">
+            </div>
+
+            <div class="form-actions">
+                <button id="btn-signup-submit" class="btn btn-primary" onclick="submitSignup()">
+                    إنشاء الحساب
+                </button>
+                <button class="btn btn-secondary" onclick="showView('signup')" style="margin-top:10px;">
+                    رجوع
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!--  VIEW 5: Login - Username                  -->
+    <!-- ══════════════════════════════════════════ -->
+    <div id="login-username-container" class="login-container" style="display:none;">
+        <div class="login-card">
+            <h2>🎓 تسجيل الدخول</h2>
+            <p class="subtitle">أدخل اسم المستخدم للمتابعة</p>
+
+            <div id="login-username-error" class="status-msg error" style="display:none;"></div>
+
+            <div class="form-group">
+                <label for="login-username">اسم المستخدم</label>
+                <input type="text" id="login-username" placeholder="أدخل اسم المستخدم"
+                       autocomplete="username"
+                       onkeypress="if(event.key==='Enter') submitUsername()">
+            </div>
+
+            <div class="form-actions">
+                <button id="btn-login-next" class="btn btn-primary" onclick="submitUsername()">
+                    التالي
+                </button>
+            </div>
+
+            <div class="form-footer">
+                <p>ليس لديك حساب؟ <a href="#" onclick="showView('signup');return false;">إنشاء حساب جديد</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!--  VIEW 6: Login - Password                  -->
+    <!-- ══════════════════════════════════════════ -->
+    <div id="login-password-container" class="login-container" style="display:none;">
+        <div class="login-card">
+            <h2>🔐 كلمة المرور</h2>
+            <p class="subtitle">أدخل كلمة المرور للمستخدم <strong id="display-username"></strong></p>
+
+            <div id="login-password-error" class="status-msg error" style="display:none;"></div>
+
+            <div class="form-group">
+                <label for="login-password">كلمة المرور</label>
+                <input type="password" id="login-password" placeholder="أدخل كلمة المرور"
+                       autocomplete="current-password"
+                       onkeypress="if(event.key==='Enter') submitLogin()">
+            </div>
+
+            <div class="form-actions">
+                <button id="btn-login-submit" class="btn btn-primary" onclick="submitLogin()">
+                    تسجيل الدخول
+                </button>
+                <button class="btn btn-secondary" onclick="showView('login-username')" style="margin-top:10px;">
+                    رجوع
+                </button>
+            </div>
+
+            <div class="form-footer">
+                <p>ليس لديك حساب؟ <a href="#" onclick="showView('signup');return false;">إنشاء حساب جديد</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!--  VIEW 7: Success                           -->
+    <!-- ══════════════════════════════════════════ -->
+    <div id="success-container" class="login-container" style="display:none;">
+        <div class="login-card">
+            <h2>✅ تم بنجاح!</h2>
+            <p class="subtitle" id="success-detail">جاري تحويلك...</p>
+            <div class="loading-content">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!--  VIEW 8: App iframe                        -->
+    <!-- ══════════════════════════════════════════ -->
     <iframe id="app-frame" class="app-frame" style="display:none;"
             allow="microphone; camera; autoplay; clipboard-write"
             sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads">
     </iframe>
 
-<script src="js/fingerprint.js"></script>
-<script src="js/api.js"></script>
-<script>
-    const SIGNUP_SITE = 'https://signup.smartclass.com.ly';
-    const LOGIN_SITE = 'https://login.smartclass.com.ly';
+    <!-- ══════════════════════════════════════════ -->
+    <!--  SCRIPTS                                   -->
+    <!-- ══════════════════════════════════════════ -->
+    <script src="js/fingerprint.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+    (function() {
+        'use strict';
 
-    let _currentToken = null;
+        // ═══════════════════════════════════════
+        //  STATE
+        // ═══════════════════════════════════════
 
-    function showLoading(msg) {
-        var el = document.getElementById('loading-screen');
-        if (el) {
-            el.style.display = 'flex';
-            var p = el.querySelector('p');
-            if (p && msg) p.textContent = msg;
+        var _token = null;
+
+        var _signupData = {
+            username: '',
+            password: '',
+            student_type: 'علمي'
+        };
+
+        var _loginData = {
+            username: '',
+            serverUrl: '',
+            serverNum: 0
+        };
+
+        // All view IDs
+        var ALL_VIEWS = [
+            'loading-screen',
+            'main-container',
+            'signup-container',
+            'verify-container',
+            'login-username-container',
+            'login-password-container',
+            'success-container',
+            'app-frame'
+        ];
+
+        // ═══════════════════════════════════════
+        //  VIEW MANAGEMENT
+        // ═══════════════════════════════════════
+
+        function hideAll() {
+            for (var i = 0; i < ALL_VIEWS.length; i++) {
+                var el = document.getElementById(ALL_VIEWS[i]);
+                if (el) el.style.display = 'none';
+            }
         }
-    }
 
-    function hideLoading() {
-        var el = document.getElementById('loading-screen');
-        if (el) el.style.display = 'none';
-    }
+        window.showView = function(viewName) {
+            hideAll();
+            hideAllErrors();
 
-    function showMain() {
-        document.getElementById('main-container').style.display = 'flex';
-        document.getElementById('app-frame').style.display = 'none';
-    }
+            switch (viewName) {
+                case 'loading':
+                    show('loading-screen', 'flex');
+                    break;
+                case 'main':
+                    show('main-container', 'flex');
+                    break;
+                case 'signup':
+                    show('signup-container', 'flex');
+                    focusEl('signup-username');
+                    break;
+                case 'verify':
+                    show('verify-container', 'flex');
+                    focusEl('verify-code');
+                    break;
+                case 'login-username':
+                    show('login-username-container', 'flex');
+                    focusEl('login-username');
+                    break;
+                case 'login-password':
+                    show('login-password-container', 'flex');
+                    focusEl('login-password');
+                    break;
+                case 'success':
+                    show('success-container', 'flex');
+                    break;
+                case 'app':
+                    show('app-frame', 'block');
+                    break;
+            }
+        };
 
-    function showApp(url) {
-        document.getElementById('main-container').style.display = 'none';
-        document.getElementById('loading-screen').style.display = 'none';
-        var frame = document.getElementById('app-frame');
-        frame.src = url;
-        frame.style.display = 'block';
-    }
-
-    function showError(msg) {
-        var el = document.getElementById('error-msg');
-        if (el) {
-            el.textContent = msg;
-            el.style.display = 'block';
-            setTimeout(function() { el.style.display = 'none'; }, 8000);
+        function show(id, displayType) {
+            var el = document.getElementById(id);
+            if (el) el.style.display = displayType || 'flex';
         }
-    }
 
-    function goSignup() {
-        window.location.href = SIGNUP_SITE;
-    }
+        function focusEl(id) {
+            setTimeout(function() {
+                var el = document.getElementById(id);
+                if (el) el.focus();
+            }, 100);
+        }
 
-    function goLogin() {
-        window.location.href = LOGIN_SITE;
-    }
+        // ═══════════════════════════════════════
+        //  ERROR MANAGEMENT
+        // ═══════════════════════════════════════
 
-    // ═══════════════════════════════════════════════════
-    //  TOKEN STORAGE - Multiple layers for Safari safety
-    // ═══════════════════════════════════════════════════
+        var ALL_ERRORS = [
+            'main-error', 'signup-error', 'verify-error',
+            'login-username-error', 'login-password-error'
+        ];
 
-    function saveToken(token) {
-        if (!token) return;
+        function hideAllErrors() {
+            for (var i = 0; i < ALL_ERRORS.length; i++) {
+                var el = document.getElementById(ALL_ERRORS[i]);
+                if (el) el.style.display = 'none';
+            }
+        }
 
-        // Layer 1: localStorage
-        try {
-            localStorage.setItem('sc_device_token', token);
-        } catch(e) {}
+        function showError(id, msg) {
+            var el = document.getElementById(id);
+            if (el) {
+                el.textContent = msg;
+                el.style.display = 'block';
+            }
+        }
 
-        // Layer 2: sessionStorage (survives page refresh, not tab close)
-        try {
-            sessionStorage.setItem('sc_device_token', token);
-        } catch(e) {}
+        function showLoading(msg) {
+            var el = document.getElementById('loading-text');
+            if (el) el.textContent = msg || 'جاري التحميل...';
+            showView('loading');
+        }
 
-        // Layer 3: Cookie on current domain
-        try {
-            var expires = new Date();
-            expires.setFullYear(expires.getFullYear() + 1);
-            document.cookie = 'sc_device_token=' + token +
-                ';expires=' + expires.toUTCString() +
-                ';path=/;SameSite=Lax;Secure';
-        } catch(e) {}
-    }
+        // ═══════════════════════════════════════
+        //  TOKEN STORAGE
+        // ═══════════════════════════════════════
 
-    function loadToken() {
-        var token = null;
-
-        // Try localStorage
-        try {
-            token = localStorage.getItem('sc_device_token');
-            if (token && token.trim()) return token.trim();
-        } catch(e) {}
-
-        // Try sessionStorage
-        try {
-            token = sessionStorage.getItem('sc_device_token');
-            if (token && token.trim()) return token.trim();
-        } catch(e) {}
-
-        // Try cookie
-        try {
-            var match = document.cookie.match(/(^| )sc_device_token=([^;]+)/);
-            if (match && match[2] && match[2].trim()) return match[2].trim();
-        } catch(e) {}
-
-        return null;
-    }
-
-    function clearAllTokens() {
-        try { localStorage.removeItem('sc_device_token'); } catch(e) {}
-        try { sessionStorage.removeItem('sc_device_token'); } catch(e) {}
-        try {
-            document.cookie = 'sc_device_token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
-        } catch(e) {}
-    }
-
-    function saveUserInfo(username, serverUrl, serverNum) {
-        // Save user info so we can auto-login even if Main DB is slow
-        try {
-            localStorage.setItem('sc_username', username);
-            localStorage.setItem('sc_server_url', serverUrl);
-            localStorage.setItem('sc_server_num', String(serverNum));
-        } catch(e) {}
-        try {
-            sessionStorage.setItem('sc_username', username);
-            sessionStorage.setItem('sc_server_url', serverUrl);
-            sessionStorage.setItem('sc_server_num', String(serverNum));
-        } catch(e) {}
-    }
-
-    function loadUserInfo() {
-        var username = null;
-        var serverUrl = null;
-        var serverNum = null;
-
-        try {
-            username = localStorage.getItem('sc_username');
-            serverUrl = localStorage.getItem('sc_server_url');
-            serverNum = localStorage.getItem('sc_server_num');
-        } catch(e) {}
-
-        if (!username) {
+        function saveToken(token) {
+            if (!token) return;
+            try { localStorage.setItem('sc_device_token', token); } catch(e) {}
+            try { sessionStorage.setItem('sc_device_token', token); } catch(e) {}
             try {
-                username = sessionStorage.getItem('sc_username');
-                serverUrl = sessionStorage.getItem('sc_server_url');
-                serverNum = sessionStorage.getItem('sc_server_num');
+                var exp = new Date();
+                exp.setFullYear(exp.getFullYear() + 1);
+                document.cookie = 'sc_device_token=' + token +
+                    ';expires=' + exp.toUTCString() + ';path=/;SameSite=Lax;Secure';
             } catch(e) {}
         }
 
-        if (username && serverUrl) {
-            return { username: username, serverUrl: serverUrl, serverNum: serverNum };
-        }
-        return null;
-    }
-
-    function clearUserInfo() {
-        try {
-            localStorage.removeItem('sc_username');
-            localStorage.removeItem('sc_server_url');
-            localStorage.removeItem('sc_server_num');
-        } catch(e) {}
-        try {
-            sessionStorage.removeItem('sc_username');
-            sessionStorage.removeItem('sc_server_url');
-            sessionStorage.removeItem('sc_server_num');
-        } catch(e) {}
-    }
-
-    // ═══════════════════════════════════════════════════
-    //  GET BEST TOKEN
-    // ═══════════════════════════════════════════════════
-
-    function getBestToken() {
-        // Priority 1: URL params (from signup/login redirect)
-        var params = new URLSearchParams(window.location.search);
-        var urlToken = params.get('token');
-
-        if (urlToken && urlToken.trim()) {
-            console.log('Token from URL:', urlToken.trim());
-            saveToken(urlToken.trim());
-            return urlToken.trim();
-        }
-
-        // Priority 2: Stored token (localStorage/sessionStorage/cookie)
-        var stored = loadToken();
-        if (stored) {
-            console.log('Token from storage:', stored);
-            return stored;
-        }
-
-        // Priority 3: Generate new
-        var newToken = DeviceFingerprint.getToken();
-        console.log('Generated new token:', newToken);
-        saveToken(newToken);
-        return newToken;
-    }
-
-    // ═══════════════════════════════════════════════════
-    //  AUTO-LOGIN FUNCTION
-    // ═══════════════════════════════════════════════════
-
-    function doAutoLogin(username, serverUrl, serverNum, token) {
-        console.log('Auto-login:', username, 'on server', serverNum);
-
-        // Save for future visits
-        saveToken(token);
-        saveUserInfo(username, serverUrl, serverNum);
-
-        var autoUrl = serverUrl + '/auto-login?token=' +
-            encodeURIComponent(token) +
-            '&username=' + encodeURIComponent(username);
-
-        showApp(autoUrl);
-    }
-
-    // ═══════════════════════════════════════════════════
-    //  INIT
-    // ═══════════════════════════════════════════════════
-
-    async function init() {
-        showLoading('جاري التحقق...');
-
-        _currentToken = getBestToken();
-        console.log('Final token:', _currentToken);
-
-        // Check URL for username (direct redirect from signup/login)
-        var params = new URLSearchParams(window.location.search);
-        var urlUsername = params.get('username');
-        var urlToken = params.get('token');
-
-        // Clean URL
-        if (params.has('token') || params.has('username')) {
-            var cleanUrl = window.location.origin + window.location.pathname;
-            window.history.replaceState({}, document.title, cleanUrl);
-        }
-
-        // ── METHOD 1: Direct redirect from signup/login with username ──
-        if (urlUsername && urlUsername.trim()) {
-            console.log('Method 1: Direct redirect with username:', urlUsername);
-
+        function loadToken() {
+            var t = null;
+            try { t = localStorage.getItem('sc_device_token'); if (t) return t; } catch(e) {}
+            try { t = sessionStorage.getItem('sc_device_token'); if (t) return t; } catch(e) {}
             try {
-                var lookupResult = await API.lookupUser(urlUsername.trim());
+                var match = document.cookie.match(/(^| )sc_device_token=([^;]+)/);
+                if (match && match[2]) return match[2];
+            } catch(e) {}
+            return null;
+        }
 
-                if (lookupResult.ok && lookupResult.found) {
-                    doAutoLogin(
-                        urlUsername.trim(),
-                        lookupResult.server_url,
-                        lookupResult.server_num,
-                        _currentToken
-                    );
+        function clearTokens() {
+            try { localStorage.removeItem('sc_device_token'); } catch(e) {}
+            try { sessionStorage.removeItem('sc_device_token'); } catch(e) {}
+            try { document.cookie = 'sc_device_token=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/'; } catch(e) {}
+        }
+
+        function saveUserInfo(username, serverUrl, serverNum) {
+            try {
+                localStorage.setItem('sc_username', username);
+                localStorage.setItem('sc_server_url', serverUrl);
+                localStorage.setItem('sc_server_num', String(serverNum));
+            } catch(e) {}
+        }
+
+        function loadUserInfo() {
+            try {
+                var u = localStorage.getItem('sc_username');
+                var s = localStorage.getItem('sc_server_url');
+                var n = localStorage.getItem('sc_server_num');
+                if (u && s) return { username: u, serverUrl: s, serverNum: n };
+            } catch(e) {}
+            return null;
+        }
+
+        function clearUserInfo() {
+            try {
+                localStorage.removeItem('sc_username');
+                localStorage.removeItem('sc_server_url');
+                localStorage.removeItem('sc_server_num');
+            } catch(e) {}
+        }
+
+        function getToken() {
+            // Try stored token first (SAME domain, always reliable)
+            var stored = loadToken();
+            if (stored && stored.trim()) {
+                return stored.trim();
+            }
+
+            // Generate new
+            var newToken = DeviceFingerprint.getToken();
+            saveToken(newToken);
+            return newToken;
+        }
+
+        // ═══════════════════════════════════════
+        //  AUTO-LOGIN
+        // ═══════════════════════════════════════
+
+        function doAutoLogin(username, serverUrl, serverNum) {
+            console.log('Auto-login:', username, 'on server', serverNum);
+
+            saveToken(_token);
+            saveUserInfo(username, serverUrl, serverNum);
+
+            var autoUrl = serverUrl + '/auto-login?token=' +
+                encodeURIComponent(_token) +
+                '&username=' + encodeURIComponent(username);
+
+            hideAll();
+            var frame = document.getElementById('app-frame');
+            frame.src = autoUrl;
+            frame.style.display = 'block';
+        }
+
+        // ═══════════════════════════════════════
+        //  SIGNUP FLOW
+        // ═══════════════════════════════════════
+
+        window.goToVerification = function() {
+            hideAllErrors();
+
+            var username = (document.getElementById('signup-username').value || '').trim();
+            var password = document.getElementById('signup-password').value || '';
+            var confirm = document.getElementById('signup-confirm').value || '';
+            var typeEl = document.querySelector('input[name="student_type"]:checked');
+
+            if (!username || !password || !confirm) {
+                showError('signup-error', 'جميع الحقول مطلوبة!');
+                return;
+            }
+            if (username.length < 3) {
+                showError('signup-error', 'اسم المستخدم قصير جداً (3 أحرف على الأقل)');
+                return;
+            }
+            if (password.length < 6) {
+                showError('signup-error', 'كلمة المرور قصيرة جداً (6 أحرف على الأقل)');
+                return;
+            }
+            if (password !== confirm) {
+                showError('signup-error', 'كلمات المرور غير متطابقة!');
+                return;
+            }
+            if (!typeEl) {
+                showError('signup-error', 'يرجى اختيار نوع الدراسة');
+                return;
+            }
+
+            _signupData.username = username;
+            _signupData.password = password;
+            _signupData.student_type = typeEl.value;
+
+            showLoading('جاري التحقق من اسم المستخدم...');
+
+            API.checkUsername(username).then(function(result) {
+                if (!result.ok) {
+                    showView('signup');
+                    showError('signup-error', result.error || 'خطأ في الاتصال');
                     return;
                 }
-            } catch (e) {
-                console.error('Method 1 lookup failed:', e);
-            }
+                if (result.exists) {
+                    showView('signup');
+                    showError('signup-error', 'اسم المستخدم موجود مسبقاً! اختر اسماً آخر.');
+                    return;
+                }
 
-            // Lookup failed but we have username - try saved server info
-            var savedInfo = loadUserInfo();
-            if (savedInfo && savedInfo.username === urlUsername.trim()) {
-                console.log('Method 1 fallback: using saved server info');
-                doAutoLogin(
-                    savedInfo.username,
-                    savedInfo.serverUrl,
-                    savedInfo.serverNum,
-                    _currentToken
-                );
+                showView('verify');
+
+            }).catch(function(e) {
+                showView('signup');
+                showError('signup-error', 'خطأ في الاتصال. تحقق من اتصالك بالإنترنت.');
+            });
+        };
+
+        window.submitSignup = async function() {
+            hideAllErrors();
+
+            var code = (document.getElementById('verify-code').value || '').trim();
+            if (!code) {
+                showError('verify-error', 'يرجى إدخال رمز التحقق');
                 return;
             }
-        }
 
-        // ── METHOD 2: Check token in Main DB ──
-        try {
-            console.log('Method 2: Checking token in Main DB...');
-            var result = await API.checkToken(_currentToken);
+            var btn = document.getElementById('btn-signup-submit');
+            btn.disabled = true;
+            btn.textContent = 'جاري إنشاء الحساب...';
 
-            if (result.ok && result.found) {
-                doAutoLogin(
-                    result.username,
-                    result.server_url,
-                    result.server_num,
-                    _currentToken
-                );
-                return;
-            }
-            console.log('Method 2: Token not found in Main DB');
-        } catch (e) {
-            console.error('Method 2 failed:', e);
-        }
+            showLoading('جاري البحث عن خادم متاح...');
 
-        // ── METHOD 3: Use saved user info (Safari fallback) ──
-        var savedInfo = loadUserInfo();
-        if (savedInfo && savedInfo.username && savedInfo.serverUrl) {
-            console.log('Method 3: Using saved user info:', savedInfo.username);
-
-            // Verify user still exists on that server
             try {
-                var verifyResult = await API.lookupUser(savedInfo.username);
+                // Step 1: Get best server
+                var serverResult = await API.getBestServer();
 
-                if (verifyResult.ok && verifyResult.found) {
-                    // Re-link token in Main DB (it might have been lost)
-                    try {
-                        await API.linkToken(savedInfo.username, _currentToken);
-                        console.log('Re-linked token in Main DB');
-                    } catch(e) {
-                        console.warn('Re-link failed:', e);
+                if (!serverResult.ok) {
+                    showView('verify');
+                    btn.disabled = false;
+                    btn.textContent = 'إنشاء الحساب';
+                    showError('verify-error', serverResult.error || 'جميع الخوادم ممتلئة حالياً.');
+                    return;
+                }
+
+                var serverUrl = serverResult.server_url;
+                var serverNum = serverResult.server_num;
+
+                console.log('Signup on server:', serverNum, serverUrl);
+                showLoading('جاري إنشاء الحساب والتحقق...');
+
+                // Step 2: Send to server
+                var signupResp = await fetch(serverUrl + '/api/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: _signupData.username,
+                        password: _signupData.password,
+                        student_type: _signupData.student_type,
+                        telegram_code: code,
+                        device_token: _token,
+                    })
+                });
+
+                var signupData = await signupResp.json();
+
+                if (!signupData.ok) {
+                    showView('verify');
+                    btn.disabled = false;
+                    btn.textContent = 'إنشاء الحساب';
+                    showError('verify-error', signupData.error || 'فشل إنشاء الحساب');
+                    return;
+                }
+
+                // Step 3: Link token in Main DB with retry
+                console.log('Signup successful:', signupData.username);
+                showLoading('جاري تجهيز حسابك...');
+
+                // If server failed to register in Main DB, retry from here
+                if (!signupData.main_db_registered) {
+                    console.warn('Main DB registration failed on server, retrying...');
+                    for (var r = 0; r < 3; r++) {
+                        try {
+                            var retryResp = await fetch(serverUrl + '/api/retry-main-db', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    username: signupData.username,
+                                    device_token: _token,
+                                })
+                            });
+                            var retryData = await retryResp.json();
+                            if (retryData.ok && retryData.registered) {
+                                console.log('Main DB retry succeeded!');
+                                break;
+                            }
+                        } catch (re) {
+                            console.warn('Retry ' + (r + 1) + ' failed:', re);
+                        }
+                        await new Promise(function(resolve) { setTimeout(resolve, 1500); });
                     }
-
-                    doAutoLogin(
-                        savedInfo.username,
-                        verifyResult.server_url,
-                        verifyResult.server_num,
-                        _currentToken
-                    );
-                    return;
                 }
+
+                // Link token with retry
+                var tokenLinked = false;
+                for (var a = 0; a < 3; a++) {
+                    try {
+                        var linkResult = await API.linkToken(signupData.username, _token);
+                        if (linkResult && linkResult.ok) {
+                            tokenLinked = true;
+                            console.log('Token linked (attempt ' + (a + 1) + ')');
+                            break;
+                        }
+                    } catch (le) {
+                        console.warn('linkToken attempt ' + (a + 1) + ' failed:', le);
+                    }
+                    await new Promise(function(resolve) { setTimeout(resolve, 1000); });
+                }
+
+                try { await API.loginSuccess(signupData.username, _token); } catch(e) {}
+
+                // Step 4: Auto-login directly (no redirect needed!)
+                console.log('Going to auto-login...');
+                document.getElementById('success-detail').textContent =
+                    'مرحباً ' + signupData.username + '! جاري تحويلك...';
+                showView('success');
+
+                setTimeout(function() {
+                    doAutoLogin(signupData.username, serverUrl, serverNum);
+                }, 1500);
+
             } catch (e) {
-                console.error('Method 3 verify failed:', e);
+                console.error('Signup error:', e);
+                showView('verify');
+                btn.disabled = false;
+                btn.textContent = 'إنشاء الحساب';
+                showError('verify-error', 'حدث خطأ. تحقق من اتصالك بالإنترنت.');
+            }
+        };
+
+        // ═══════════════════════════════════════
+        //  LOGIN FLOW
+        // ═══════════════════════════════════════
+
+        window.submitUsername = async function() {
+            hideAllErrors();
+
+            var username = (document.getElementById('login-username').value || '').trim();
+
+            if (!username) {
+                showError('login-username-error', 'يرجى إدخال اسم المستخدم');
+                return;
+            }
+            if (username.length < 3) {
+                showError('login-username-error', 'اسم المستخدم قصير جداً');
+                return;
             }
 
-            // Even verify failed - try direct auto-login anyway
-            // The server will redirect to login if user doesn't exist
-            console.log('Method 3 fallback: trying direct auto-login');
-            doAutoLogin(
-                savedInfo.username,
-                savedInfo.serverUrl,
-                savedInfo.serverNum,
-                _currentToken
-            );
-            return;
+            var btn = document.getElementById('btn-login-next');
+            btn.disabled = true;
+            btn.textContent = 'جاري البحث...';
+
+            showLoading('جاري البحث عن حسابك...');
+
+            try {
+                var result = await API.lookupUser(username);
+
+                if (!result.ok) {
+                    showView('login-username');
+                    btn.disabled = false;
+                    btn.textContent = 'التالي';
+                    showError('login-username-error', result.error || 'حدث خطأ في الاتصال');
+                    return;
+                }
+
+                if (!result.found) {
+                    showView('login-username');
+                    btn.disabled = false;
+                    btn.textContent = 'التالي';
+                    showError('login-username-error', 'لا يوجد حساب بهذا الاسم. هل تريد إنشاء حساب جديد؟');
+                    return;
+                }
+
+                _loginData.username = username;
+                _loginData.serverUrl = result.server_url;
+                _loginData.serverNum = result.server_num;
+
+                console.log('User found on server:', result.server_num);
+
+                btn.disabled = false;
+                btn.textContent = 'التالي';
+
+                document.getElementById('display-username').textContent = username;
+                showView('login-password');
+
+            } catch (e) {
+                console.error('Login lookup error:', e);
+                showView('login-username');
+                btn.disabled = false;
+                btn.textContent = 'التالي';
+                showError('login-username-error', 'حدث خطأ. تحقق من اتصالك بالإنترنت.');
+            }
+        };
+
+        window.submitLogin = async function() {
+            hideAllErrors();
+
+            var password = document.getElementById('login-password').value || '';
+
+            if (!password) {
+                showError('login-password-error', 'يرجى إدخال كلمة المرور');
+                return;
+            }
+
+            var btn = document.getElementById('btn-login-submit');
+            btn.disabled = true;
+            btn.textContent = 'جاري تسجيل الدخول...';
+
+            showLoading('جاري تسجيل الدخول...');
+
+            try {
+                // Step 1: Send login to server
+                var loginResp = await fetch(_loginData.serverUrl + '/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: _loginData.username,
+                        password: password,
+                        device_token: _token,
+                    })
+                });
+
+                var loginData = await loginResp.json();
+
+                if (!loginData.ok) {
+                    showView('login-password');
+                    btn.disabled = false;
+                    btn.textContent = 'تسجيل الدخول';
+                    showError('login-password-error', loginData.error || 'كلمة المرور خطأ');
+                    return;
+                }
+
+                // Step 2: Link token in Main DB with retry
+                console.log('Login successful:', _loginData.username);
+                showLoading('جاري تجهيز الجلسة...');
+
+                if (!loginData.main_db_registered) {
+                    console.warn('Main DB notify failed, retrying...');
+                    for (var r = 0; r < 3; r++) {
+                        try {
+                            var retryResp = await fetch(_loginData.serverUrl + '/api/retry-main-db', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    username: _loginData.username,
+                                    device_token: _token,
+                                })
+                            });
+                            var retryData = await retryResp.json();
+                            if (retryData.ok && retryData.registered) {
+                                console.log('Main DB retry succeeded!');
+                                break;
+                            }
+                        } catch (re) {
+                            console.warn('Retry ' + (r + 1) + ' failed:', re);
+                        }
+                        await new Promise(function(resolve) { setTimeout(resolve, 1500); });
+                    }
+                }
+
+                // Link token with retry
+                var tokenLinked = false;
+                for (var a = 0; a < 3; a++) {
+                    try {
+                        var linkResult = await API.linkToken(_loginData.username, _token);
+                        if (linkResult && linkResult.ok) {
+                            tokenLinked = true;
+                            console.log('Token linked (attempt ' + (a + 1) + ')');
+                            break;
+                        }
+                    } catch (le) {
+                        console.warn('linkToken attempt ' + (a + 1) + ' failed:', le);
+                    }
+                    await new Promise(function(resolve) { setTimeout(resolve, 1000); });
+                }
+
+                try { await API.loginSuccess(_loginData.username, _token); } catch(e) {}
+
+                // Step 3: Auto-login directly (no redirect!)
+                console.log('Going to auto-login...');
+                document.getElementById('success-detail').textContent =
+                    'مرحباً ' + _loginData.username + '! جاري تحويلك...';
+                showView('success');
+
+                setTimeout(function() {
+                    doAutoLogin(_loginData.username, _loginData.serverUrl, _loginData.serverNum);
+                }, 1500);
+
+            } catch (e) {
+                console.error('Login error:', e);
+                showView('login-password');
+                btn.disabled = false;
+                btn.textContent = 'تسجيل الدخول';
+                showError('login-password-error', 'حدث خطأ. تحقق من اتصالك بالإنترنت.');
+            }
+        };
+
+        // ═══════════════════════════════════════
+        //  IFRAME MESSAGE LISTENER
+        // ═══════════════════════════════════════
+
+        window.addEventListener('message', function(event) {
+            var origin = event.origin || '';
+            var isValid = origin.includes('serverclass') && origin.includes('hf.space');
+            if (!isValid) return;
+
+            var data = event.data;
+            if (!data || typeof data !== 'object') return;
+
+            console.log('Message from server:', data.type);
+
+            if (data.type === 'force_logout') {
+                document.getElementById('app-frame').src = '';
+                document.getElementById('app-frame').style.display = 'none';
+                clearTokens();
+                clearUserInfo();
+                showView('login-username');
+                showError('login-username-error', data.message || 'تم تسجيل الدخول من جهاز آخر');
+            }
+
+            if (data.type === 'logout') {
+                document.getElementById('app-frame').src = '';
+                document.getElementById('app-frame').style.display = 'none';
+                clearTokens();
+                clearUserInfo();
+                showView('main');
+            }
+        });
+
+        // ═══════════════════════════════════════
+        //  INIT - Auto-login check on page load
+        // ═══════════════════════════════════════
+
+        async function init() {
+            showLoading('جاري التحقق...');
+
+            // Get or create token (SAME domain = always same token)
+            _token = getToken();
+            console.log('Token:', _token);
+
+            // ── METHOD 1: Check token in Main DB ──
+            try {
+                console.log('Checking token in Main DB...');
+                var result = await API.checkToken(_token);
+
+                if (result.ok && result.found) {
+                    console.log('Token found! User:', result.username, 'Server:', result.server_num);
+                    doAutoLogin(result.username, result.server_url, result.server_num);
+                    return;
+                }
+                console.log('Token not found in Main DB');
+            } catch (e) {
+                console.error('Token check failed:', e);
+            }
+
+            // ── METHOD 2: Use saved user info (fallback) ──
+            var savedInfo = loadUserInfo();
+            if (savedInfo && savedInfo.username && savedInfo.serverUrl) {
+                console.log('Trying saved user info:', savedInfo.username);
+
+                try {
+                    var verifyResult = await API.lookupUser(savedInfo.username);
+
+                    if (verifyResult.ok && verifyResult.found) {
+                        // Re-link token
+                        try {
+                            await API.linkToken(savedInfo.username, _token);
+                            console.log('Re-linked token for saved user');
+                        } catch(e) {}
+
+                        doAutoLogin(
+                            savedInfo.username,
+                            verifyResult.server_url,
+                            verifyResult.server_num
+                        );
+                        return;
+                    }
+                } catch (e) {
+                    console.error('Saved user verify failed:', e);
+                }
+            }
+
+            // ── NOTHING WORKED: Show main buttons ──
+            console.log('No auto-login, showing main page');
+            showView('main');
         }
 
-        // ── NOTHING WORKED: Show login/signup buttons ──
-        console.log('No auto-login possible, showing buttons');
-        hideLoading();
-        showMain();
-    }
+        // ═══════════════════════════════════════
+        //  START
+        // ═══════════════════════════════════════
 
-    // ═══════════════════════════════════════════════════
-    //  MESSAGE LISTENER
-    // ═══════════════════════════════════════════════════
-
-    window.addEventListener('message', function(event) {
-        var origin = event.origin || '';
-        var isValid = origin.includes('serverclass') && origin.includes('hf.space');
-        if (!isValid) return;
-
-        var data = event.data;
-        if (!data || typeof data !== 'object') return;
-
-        console.log('Message from server:', data.type);
-
-        if (data.type === 'force_logout') {
-            document.getElementById('app-frame').src = '';
-            document.getElementById('app-frame').style.display = 'none';
-            clearAllTokens();
-            clearUserInfo();
-            window.location.href = LOGIN_SITE + '?reason=force_logout&msg=' +
-                encodeURIComponent(data.message || 'تم تسجيل الدخول من جهاز آخر');
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
         }
 
-        if (data.type === 'logout') {
-            document.getElementById('app-frame').src = '';
-            document.getElementById('app-frame').style.display = 'none';
-            clearAllTokens();
-            clearUserInfo();
-            showMain();
-        }
-    });
-
-    // Start
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
-</script>
+    })();
+    </script>
 </body>
 </html>
