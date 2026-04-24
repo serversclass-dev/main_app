@@ -2,69 +2,93 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ServerClass - منصة التعليم الذكي</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SmartClass - منصة التعليم الذكي</title>
+    <meta name="description" content="منصة التعليم الذكي بالذكاء الاصطناعي - SmartClass">
+    <meta name="theme-color" content="#4A90D9">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="icon" href="logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="logo.png">
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- ══════════════════════════════════════════ -->
-    <!--  VIEW 1: Loading Screen                    -->
-    <!-- ══════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════ -->
+    <!--  VIEW 1: Loading Screen               -->
+    <!-- ══════════════════════════════════════ -->
     <div id="loading-screen" class="loading-screen">
         <div class="loading-content">
+            <img src="logo.png" alt="SmartClass" class="logo-image heartbeat"
+                 onerror="this.style.display='none'">
             <div class="spinner"></div>
             <p id="loading-text">جاري التحقق...</p>
+            <div class="progress-bar" style="max-width:200px;margin:15px auto 0;">
+                <div class="fill" style="width:0%;animation:loadingProgress 3s ease forwards;"></div>
+            </div>
         </div>
+        <style>
+            @keyframes loadingProgress {
+                0% { width: 0%; }
+                20% { width: 20%; }
+                50% { width: 55%; }
+                80% { width: 80%; }
+                100% { width: 100%; }
+            }
+        </style>
     </div>
 
-    <!-- ══════════════════════════════════════════ -->
-    <!--  VIEW 2: Main Buttons (signup/login)       -->
-    <!-- ══════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════ -->
+    <!--  VIEW 2: Main Buttons                 -->
+    <!-- ══════════════════════════════════════ -->
     <div id="main-container" class="main-container" style="display:none;">
         <div class="hero">
             <div class="hero-content">
-                <h1 class="logo-text">🎓 ServerClass</h1>
+                <h1 class="logo-text rubber-band">🎓 SmartClass</h1>
                 <p class="tagline">منصة التعليم الذكي بالذكاء الاصطناعي</p>
             </div>
         </div>
         <div class="actions">
-            <button class="btn btn-primary btn-lg" onclick="showView('signup')">
-                إنشاء حساب جديد
+            <button class="btn btn-primary btn-lg jelly" onclick="showView('signup')">
+                ✨ إنشاء حساب جديد
             </button>
-            <button class="btn btn-secondary btn-lg" onclick="showView('login-username')">
-                تسجيل الدخول
+            <button class="btn btn-secondary btn-lg jelly" onclick="showView('login-username')">
+                🔑 تسجيل الدخول
             </button>
         </div>
         <div id="main-error" class="error-msg" style="display:none;"></div>
     </div>
 
-    <!-- ══════════════════════════════════════════ -->
-    <!--  VIEW 3: Signup Form                       -->
-    <!-- ══════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════ -->
+    <!--  VIEW 3: Signup Form                  -->
+    <!-- ══════════════════════════════════════ -->
     <div id="signup-container" class="login-container" style="display:none;">
         <div class="login-card">
             <h2>🎓 إنشاء حساب جديد</h2>
-            <p class="subtitle">أنشئ حسابك في ServerClass</p>
+            <p class="subtitle">أنشئ حسابك في SmartClass</p>
 
             <div id="signup-error" class="status-msg error" style="display:none;"></div>
 
             <div class="form-group">
                 <label for="signup-username">اسم المستخدم</label>
-                <input type="text" id="signup-username" placeholder="أدخل اسم المستخدم (3 أحرف على الأقل)"
-                       autocomplete="username">
+                <input type="text" id="signup-username"
+                       placeholder="أدخل اسم المستخدم (3 أحرف على الأقل)"
+                       autocomplete="username" maxlength="30">
             </div>
 
             <div class="form-group">
                 <label for="signup-password">كلمة المرور</label>
-                <input type="password" id="signup-password" placeholder="كلمة المرور (6 أحرف على الأقل)">
+                <input type="password" id="signup-password"
+                       placeholder="كلمة المرور (6 أحرف على الأقل)" maxlength="50">
             </div>
 
             <div class="form-group">
                 <label for="signup-confirm">تأكيد كلمة المرور</label>
-                <input type="password" id="signup-confirm" placeholder="أعد كتابة كلمة المرور">
+                <input type="password" id="signup-confirm"
+                       placeholder="أعد كتابة كلمة المرور" maxlength="50">
             </div>
 
             <div class="form-group">
@@ -72,18 +96,18 @@
                 <div class="radio-group">
                     <label class="radio-label">
                         <input type="radio" name="student_type" value="علمي" checked>
-                        <span>علمي</span>
+                        <span>🔬 علمي</span>
                     </label>
                     <label class="radio-label">
                         <input type="radio" name="student_type" value="أدبي">
-                        <span>أدبي</span>
+                        <span>📖 أدبي</span>
                     </label>
                 </div>
             </div>
 
             <div class="form-actions">
                 <button id="btn-to-verify" class="btn btn-primary" onclick="goToVerification()">
-                    التالي - التحقق من تيليجرام
+                    التالي - التحقق من تيليجرام 📱
                 </button>
             </div>
 
@@ -93,9 +117,9 @@
         </div>
     </div>
 
-    <!-- ══════════════════════════════════════════ -->
-    <!--  VIEW 4: Telegram Verification             -->
-    <!-- ══════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════ -->
+    <!--  VIEW 4: Telegram Verification        -->
+    <!-- ══════════════════════════════════════ -->
     <div id="verify-container" class="login-container" style="display:none;">
         <div class="login-card">
             <h2>📱 التحقق من تيليجرام</h2>
@@ -105,25 +129,26 @@
 
             <div class="form-group">
                 <label for="verify-code">رمز التحقق</label>
-                <input type="text" id="verify-code" placeholder="أدخل الرمز من تيليجرام"
-                       autocomplete="one-time-code"
+                <input type="text" id="verify-code"
+                       placeholder="أدخل الرمز من تيليجرام"
+                       autocomplete="one-time-code" maxlength="8"
                        onkeypress="if(event.key==='Enter') submitSignup()">
             </div>
 
             <div class="form-actions">
                 <button id="btn-signup-submit" class="btn btn-primary" onclick="submitSignup()">
-                    إنشاء الحساب
+                    ✅ إنشاء الحساب
                 </button>
                 <button class="btn btn-secondary" onclick="showView('signup')" style="margin-top:10px;">
-                    رجوع
+                    ↩️ رجوع
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- ══════════════════════════════════════════ -->
-    <!--  VIEW 5: Login - Username                  -->
-    <!-- ══════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════ -->
+    <!--  VIEW 5: Login - Username             -->
+    <!-- ══════════════════════════════════════ -->
     <div id="login-username-container" class="login-container" style="display:none;">
         <div class="login-card">
             <h2>🎓 تسجيل الدخول</h2>
@@ -133,14 +158,15 @@
 
             <div class="form-group">
                 <label for="login-username">اسم المستخدم</label>
-                <input type="text" id="login-username" placeholder="أدخل اسم المستخدم"
-                       autocomplete="username"
+                <input type="text" id="login-username"
+                       placeholder="أدخل اسم المستخدم"
+                       autocomplete="username" maxlength="30"
                        onkeypress="if(event.key==='Enter') submitUsername()">
             </div>
 
             <div class="form-actions">
                 <button id="btn-login-next" class="btn btn-primary" onclick="submitUsername()">
-                    التالي
+                    التالي ←
                 </button>
             </div>
 
@@ -150,29 +176,30 @@
         </div>
     </div>
 
-    <!-- ══════════════════════════════════════════ -->
-    <!--  VIEW 6: Login - Password                  -->
-    <!-- ══════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════ -->
+    <!--  VIEW 6: Login - Password             -->
+    <!-- ══════════════════════════════════════ -->
     <div id="login-password-container" class="login-container" style="display:none;">
         <div class="login-card">
             <h2>🔐 كلمة المرور</h2>
-            <p class="subtitle">أدخل كلمة المرور للمستخدم <strong id="display-username"></strong></p>
+            <p class="subtitle">أدخل كلمة المرور للمستخدم <strong id="display-username" class="highlight"></strong></p>
 
             <div id="login-password-error" class="status-msg error" style="display:none;"></div>
 
             <div class="form-group">
                 <label for="login-password">كلمة المرور</label>
-                <input type="password" id="login-password" placeholder="أدخل كلمة المرور"
-                       autocomplete="current-password"
+                <input type="password" id="login-password"
+                       placeholder="أدخل كلمة المرور"
+                       autocomplete="current-password" maxlength="50"
                        onkeypress="if(event.key==='Enter') submitLogin()">
             </div>
 
             <div class="form-actions">
                 <button id="btn-login-submit" class="btn btn-primary" onclick="submitLogin()">
-                    تسجيل الدخول
+                    🔓 تسجيل الدخول
                 </button>
                 <button class="btn btn-secondary" onclick="showView('login-username')" style="margin-top:10px;">
-                    رجوع
+                    ↩️ رجوع
                 </button>
             </div>
 
@@ -182,11 +209,11 @@
         </div>
     </div>
 
-    <!-- ══════════════════════════════════════════ -->
-    <!--  VIEW 7: Success                           -->
-    <!-- ══════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════ -->
+    <!--  VIEW 7: Success                      -->
+    <!-- ══════════════════════════════════════ -->
     <div id="success-container" class="login-container" style="display:none;">
-        <div class="login-card">
+        <div class="login-card" style="overflow:hidden;">
             <h2>✅ تم بنجاح!</h2>
             <p class="subtitle" id="success-detail">جاري تحويلك...</p>
             <div class="loading-content">
@@ -195,14 +222,79 @@
         </div>
     </div>
 
-    <!-- ══════════════════════════════════════════ -->
-    <!--  VIEW 8: App iframe                        -->
-    <!-- ══════════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════ -->
+    <!--  VIEW 8: App iframe                   -->
+    <!-- ══════════════════════════════════════ -->
     <iframe id="app-frame" class="app-frame" style="display:none;"
             allow="microphone; camera; autoplay; clipboard-write"
-            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads">
+            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads"
+            title="SmartClass Application">
     </iframe>
 
+    <!-- ══════════════════════════════════════ -->
+    <!--  SVG FILTERS FOR SKETCH EFFECT        -->
+    <!-- ══════════════════════════════════════ -->
+    <svg style="position:absolute;width:0;height:0;" aria-hidden="true">
+        <defs>
+            <filter id="sketch-filter">
+                <feTurbulence type="turbulence" baseFrequency="0.01" numOctaves="3" result="noise" seed="2"/>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+            <filter id="pencil-texture">
+                <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="5" stitchTiles="stitch" result="noise"/>
+                <feColorMatrix type="saturate" values="0" in="noise" result="grayNoise"/>
+                <feBlend in="SourceGraphic" in2="grayNoise" mode="multiply"/>
+            </filter>
+            <filter id="paper-texture">
+                <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" result="noise"/>
+                <feDiffuseLighting in="noise" lighting-color="white" surfaceScale="1.5" result="light">
+                    <feDistantLight azimuth="45" elevation="55"/>
+                </feDiffuseLighting>
+                <feBlend in="SourceGraphic" in2="light" mode="multiply"/>
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- ══════════════════════════════════════ -->
+    <!--  PRELOAD CRITICAL ASSETS              -->
+    <!-- ══════════════════════════════════════ -->
+    <link rel="preload" href="logo.png" as="image">
+
+    <!-- ══════════════════════════════════════ -->
+    <!--  INLINE CRITICAL CSS FOR FAST LOAD    -->
+    <!-- ══════════════════════════════════════ -->
+    <style>
+        /* Prevent FOUC (Flash of Unstyled Content) */
+        .loading-screen {
+            opacity: 1;
+        }
+
+        [style*="display:none"] {
+            display: none !important;
+        }
+
+        /* Smooth font rendering */
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        /* Prevent layout shift */
+        .logo-image {
+            aspect-ratio: 1;
+        }
+
+        /* Loading animation for progress bar */
+        .loading-screen .progress-bar {
+            opacity: 0;
+            animation: fadeIn 0.5s ease 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+    </style>
     <!-- ══════════════════════════════════════════ -->
     <!--  SCRIPTS                                   -->
     <!-- ══════════════════════════════════════════ -->
@@ -889,5 +981,37 @@
 
     })();
     </script>
+    <!-- ══════════════════════════════════════ -->
+    <!--  MAIN JAVASCRIPT                      -->
+    <!-- ══════════════════════════════════════ -->
+    <script src="js/app.js"></script>
+
+    <!-- ══════════════════════════════════════ -->
+    <!--  NO-SCRIPT FALLBACK                   -->
+    <!-- ══════════════════════════════════════ -->
+    <noscript>
+        <style>
+            .loading-screen { display: none !important; }
+            body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                text-align: center;
+                font-family: 'Tajawal', sans-serif;
+                direction: rtl;
+                padding: 20px;
+            }
+        </style>
+        <div style="max-width:400px;margin:auto;padding:40px;background:#fff;border-radius:20px;border:3px solid #4A90D9;box-shadow:4px 4px 0 rgba(0,0,0,0.1);">
+            <h1 style="font-size:2rem;margin-bottom:15px;">🎓 SmartClass</h1>
+            <p style="font-size:1.1rem;color:#5D6D7E;margin-bottom:20px;">منصة التعليم الذكي</p>
+            <div style="padding:15px;background:#FFF0F0;border:2px solid #E74C3C;border-radius:12px;color:#E74C3C;">
+                <p style="font-weight:700;">⚠️ يجب تفعيل JavaScript</p>
+                <p style="font-size:0.9rem;margin-top:8px;">هذا التطبيق يحتاج إلى تفعيل JavaScript في متصفحك للعمل بشكل صحيح.</p>
+            </div>
+        </div>
+    </noscript>
+
 </body>
 </html>
