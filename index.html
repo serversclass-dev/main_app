@@ -2,15 +2,12 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ServerClass - منصة التعليم الذكي</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>سمارت كلاس - منصة التعليم الذكي بالذكاء الاصطناعي</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
-        /* ══════════════════════════════════════════════
-           DESIGN TOKENS & CSS CUSTOM PROPERTIES
-           ══════════════════════════════════════════════ */
         :root {
             --bg: #fdfbf7;
             --fg: #2d2d2d;
@@ -20,9 +17,13 @@
             --secondary: #2d5da1;
             --card-bg: #ffffff;
             --postit: #fff9c4;
+            --green: #4caf50;
+            --purple: #7c4dff;
+            --orange: #ff9800;
 
             --font-heading: 'Kalam', 'Tajawal', cursive;
             --font-body: 'Patrick Hand', 'Tajawal', cursive;
+            --font-arabic: 'Tajawal', sans-serif;
 
             --radius-wobbly: 255px 15px 225px 15px / 15px 225px 15px 255px;
             --radius-wobbly-md: 185px 12px 165px 12px / 12px 165px 12px 185px;
@@ -37,9 +38,6 @@
             --shadow-card-hover: 6px 6px 0px 0px rgba(45, 45, 45, 0.2);
         }
 
-        /* ══════════════════════════════════════════════
-           RESET & BASE
-           ══════════════════════════════════════════════ */
         *, *::before, *::after {
             margin: 0;
             padding: 0;
@@ -49,18 +47,18 @@
         html {
             scroll-behavior: smooth;
             -webkit-text-size-adjust: 100%;
+            height: 100%;
         }
 
         body {
-            font-family: var(--font-body);
+            font-family: var(--font-arabic);
             background-color: var(--bg);
             color: var(--fg);
-            min-height: 100vh;
+            min-height: 100%;
             overflow-x: hidden;
-            /* Paper dot texture */
             background-image: radial-gradient(var(--muted) 1px, transparent 1px);
             background-size: 24px 24px;
-            line-height: 1.6;
+            line-height: 1.8;
             font-size: 18px;
         }
 
@@ -69,10 +67,8 @@
            ══════════════════════════════════════════════ */
         .loading-screen {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -91,17 +87,26 @@
         }
 
         .loading-content p {
-            font-family: var(--font-heading);
+            font-family: var(--font-arabic);
             font-size: 1.4rem;
             font-weight: 700;
             color: var(--fg);
-            letter-spacing: 0.5px;
         }
 
-        /* Hand-drawn spinner */
+        .loading-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            animation: logoPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes logoPulse {
+            0%, 100% { transform: scale(1) rotate(-2deg); }
+            50% { transform: scale(1.08) rotate(2deg); }
+        }
+
         .spinner {
-            width: 56px;
-            height: 56px;
+            width: 56px; height: 56px;
             border: 4px solid var(--muted);
             border-top: 4px solid var(--accent);
             border-right: 4px solid var(--secondary);
@@ -110,140 +115,618 @@
         }
 
         @keyframes wobbleSpin {
-            0% {
-                transform: rotate(0deg);
-                border-radius: 72% 28% 63% 37% / 45% 62% 38% 55%;
-            }
-            25% {
-                border-radius: 38% 62% 45% 55% / 63% 37% 72% 28%;
-            }
-            50% {
-                transform: rotate(180deg);
-                border-radius: 55% 45% 28% 72% / 37% 63% 62% 38%;
-            }
-            75% {
-                border-radius: 62% 38% 55% 45% / 28% 72% 37% 63%;
-            }
-            100% {
-                transform: rotate(360deg);
-                border-radius: 72% 28% 63% 37% / 45% 62% 38% 55%;
-            }
+            0%   { transform: rotate(0deg);   border-radius: 72% 28% 63% 37% / 45% 62% 38% 55%; }
+            25%  { border-radius: 38% 62% 45% 55% / 63% 37% 72% 28%; }
+            50%  { transform: rotate(180deg); border-radius: 55% 45% 28% 72% / 37% 63% 62% 38%; }
+            75%  { border-radius: 62% 38% 55% 45% / 28% 72% 37% 63%; }
+            100% { transform: rotate(360deg); border-radius: 72% 28% 63% 37% / 45% 62% 38% 55%; }
         }
 
         /* ══════════════════════════════════════════════
-           HERO / MAIN CONTAINER
+           MAIN LANDING PAGE
            ══════════════════════════════════════════════ */
         .main-container {
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 40px 24px;
+            padding: 0;
             position: relative;
+            overflow-x: hidden;
         }
 
-        /* Decorative tape strip at top */
-        .main-container::before {
-            content: '';
-            position: absolute;
-            top: 30px;
-            left: 50%;
-            transform: translateX(-50%) rotate(-2deg);
-            width: 120px;
-            height: 28px;
-            background: rgba(45, 45, 45, 0.08);
-            border-radius: var(--radius-wobbly-sm);
-            border: 2px dashed rgba(45, 45, 45, 0.15);
-            z-index: 1;
+        /* ── NAVBAR ── */
+        .navbar {
+            width: 100%;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(253, 251, 247, 0.92);
+            backdrop-filter: blur(8px);
+            border-bottom: 2.5px dashed var(--muted);
         }
 
-        .hero {
-            text-align: center;
-            margin-bottom: 48px;
-            position: relative;
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            transform: rotate(-1deg);
         }
 
-        .hero-content {
-            position: relative;
+        .nav-logo img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            box-shadow: var(--shadow-hard-sm);
         }
 
-        .logo-text {
+        .nav-logo-text {
             font-family: var(--font-heading);
-            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--fg);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            font-family: var(--font-arabic);
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 8px 18px;
+            border: 2.5px solid var(--border);
+            border-radius: var(--radius-wobbly-sm);
+            cursor: pointer;
+            transition: all 100ms ease;
+            text-decoration: none;
+            background: var(--card-bg);
+            color: var(--fg);
+            box-shadow: var(--shadow-hard-sm);
+        }
+
+        .nav-btn:hover {
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0px 0px var(--fg);
+        }
+
+        .nav-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: none;
+        }
+
+        .nav-btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        /* ── HERO SECTION ── */
+        .hero-section {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 24px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-logo {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
+            border: 3px solid var(--border);
+            box-shadow: var(--shadow-hard);
+            background: var(--card-bg);
+            padding: 8px;
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--postit);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-wobbly-sm);
+            padding: 6px 18px;
+            font-family: var(--font-arabic);
+            font-size: 0.85rem;
             font-weight: 700;
             color: var(--fg);
             margin-bottom: 16px;
             transform: rotate(-1deg);
-            display: inline-block;
-            position: relative;
-            line-height: 1.2;
+            box-shadow: var(--shadow-hard-sm);
         }
 
-        /* Wavy underline on logo */
-        .logo-text::after {
+        .hero-title {
+            font-family: var(--font-heading);
+            font-size: clamp(2.2rem, 7vw, 4.2rem);
+            font-weight: 700;
+            color: var(--fg);
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .hero-title .highlight {
+            color: var(--accent);
+            position: relative;
+            display: inline-block;
+        }
+
+        .hero-title .highlight::after {
             content: '';
             position: absolute;
-            bottom: -4px;
-            left: 10%;
-            right: 10%;
-            height: 4px;
+            bottom: 2px;
+            left: -4px; right: -4px;
+            height: 6px;
             background: var(--accent);
+            opacity: 0.25;
             border-radius: var(--radius-wobbly-sm);
-            transform: rotate(0.5deg);
+            transform: rotate(-0.5deg);
         }
 
-        .tagline {
-            font-family: var(--font-body);
-            font-size: clamp(1.1rem, 3vw, 1.5rem);
+        .hero-subtitle {
+            font-family: var(--font-arabic);
+            font-size: clamp(1rem, 3vw, 1.35rem);
             color: var(--fg);
-            opacity: 0.75;
-            max-width: 500px;
-            margin: 0 auto;
-            transform: rotate(0.5deg);
+            opacity: 0.7;
+            max-width: 650px;
+            margin: 14px auto 28px;
+            line-height: 1.9;
         }
 
-        .actions {
+        .hero-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .stat-item {
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            width: 100%;
-            max-width: 380px;
-            position: relative;
+            align-items: center;
+            gap: 2px;
         }
 
-        /* Decorative hand-drawn arrow pointing to buttons */
-        .actions::before {
-            content: '↓';
-            position: absolute;
-            top: -36px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 1.8rem;
-            color: var(--accent);
+        .stat-number {
             font-family: var(--font-heading);
-            animation: gentleBounce 2.5s ease-in-out infinite;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .stat-label {
+            font-family: var(--font-arabic);
+            font-size: 0.85rem;
+            color: var(--fg);
+            opacity: 0.6;
+        }
+
+        .hero-doodle-1 {
+            position: absolute;
+            top: 40px; left: 5%;
+            width: 50px; height: 50px;
+            border: 3px dashed var(--muted);
+            border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
+            animation: gentleBounce 3s ease-in-out infinite;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .hero-doodle-2 {
+            position: absolute;
+            bottom: 20px; right: 8%;
+            width: 35px; height: 35px;
+            border: 2.5px dashed var(--accent);
+            border-radius: 45% 55% 40% 60% / 55% 40% 60% 45%;
+            animation: gentleBounce 3.5s ease-in-out infinite reverse;
+            opacity: 0.35;
+            pointer-events: none;
         }
 
         @keyframes gentleBounce {
-            0%, 100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(-8px); }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
+
+        /* ── SECTIONS ── */
+        .section {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 50px 24px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-tag {
+            display: inline-block;
+            background: var(--postit);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-wobbly-sm);
+            padding: 4px 16px;
+            font-family: var(--font-arabic);
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            transform: rotate(1deg);
+            box-shadow: 1px 1px 0px 0px var(--fg);
+        }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: clamp(1.6rem, 5vw, 2.6rem);
+            font-weight: 700;
+            color: var(--fg);
+            margin-bottom: 8px;
+        }
+
+        .section-desc {
+            font-family: var(--font-arabic);
+            font-size: 1.05rem;
+            color: var(--fg);
+            opacity: 0.65;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Feature Cards */
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border: 2.5px solid var(--border);
+            border-radius: var(--radius-wobbly-md);
+            padding: 28px 24px;
+            position: relative;
+            box-shadow: var(--shadow-card);
+            transition: all 150ms ease;
+            transform: rotate(0deg);
+        }
+
+        .feature-card:nth-child(odd) { transform: rotate(-0.5deg); }
+        .feature-card:nth-child(even) { transform: rotate(0.5deg); }
+
+        .feature-card:hover {
+            box-shadow: var(--shadow-card-hover);
+            transform: rotate(0deg) translateY(-3px);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%) rotate(2deg);
+            width: 80px;
+            height: 20px;
+            background: rgba(45, 45, 45, 0.06);
+            border-radius: 4px;
+            border: 1.5px dashed rgba(45, 45, 45, 0.1);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            background: var(--postit);
+            border: 2.5px solid var(--border);
+            border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
+            box-shadow: var(--shadow-hard-sm);
+            margin-bottom: 16px;
+        }
+
+        .feature-card h3 {
+            font-family: var(--font-arabic);
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--fg);
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            font-family: var(--font-arabic);
+            font-size: 0.92rem;
+            color: var(--fg);
+            opacity: 0.7;
+            line-height: 1.8;
+        }
+
+        .feature-tag {
+            display: inline-block;
+            margin-top: 12px;
+            margin-left: 4px;
+            padding: 3px 12px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            border-radius: var(--radius-wobbly-sm);
+            border: 1.5px solid;
+        }
+
+        .tag-ai { background: #e8f5e9; color: #2e7d32; border-color: #2e7d32; }
+        .tag-voice { background: #e3f2fd; color: #1565c0; border-color: #1565c0; }
+        .tag-free { background: #fff9c4; color: #f57f17; border-color: #f57f17; }
+        .tag-new { background: #fce4ec; color: #c62828; border-color: #c62828; }
+
+        /* ── HOW IT WORKS ── */
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            position: relative;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .steps-container::before {
+                content: '';
+                position: absolute;
+                top: 40px;
+                bottom: 40px;
+                right: 27px;
+                width: 0;
+                border-right: 3px dashed var(--muted);
+                z-index: 0;
+            }
+        }
+
+        .step-item {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            min-width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            background: var(--secondary);
+            border: 3px solid var(--border);
+            border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
+            box-shadow: var(--shadow-hard-sm);
+            z-index: 2;
+        }
+
+        .step-item:nth-child(2) .step-number { background: var(--accent); }
+        .step-item:nth-child(3) .step-number { background: var(--green); }
+        .step-item:nth-child(4) .step-number { background: var(--purple); }
+
+        .step-content {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-wobbly-sm);
+            padding: 16px 20px;
+            box-shadow: var(--shadow-card);
+            flex: 1;
+        }
+
+        .step-content h4 {
+            font-family: var(--font-arabic);
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .step-content p {
+            font-family: var(--font-arabic);
+            font-size: 0.88rem;
+            opacity: 0.7;
+            line-height: 1.7;
+        }
+
+        /* ── SUBJECTS ── */
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        @media (min-width: 768px) {
+            .subjects-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (min-width: 1024px) {
+            .subjects-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .subject-chip {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-wobbly-sm);
+            padding: 10px 14px;
+            text-align: center;
+            font-family: var(--font-arabic);
+            font-size: 0.85rem;
+            font-weight: 700;
+            box-shadow: var(--shadow-hard-sm);
+            transition: all 100ms ease;
+            cursor: default;
+        }
+
+        .subject-chip:hover {
+            transform: rotate(-1deg) translate(1px, 1px);
+            box-shadow: 1px 1px 0px 0px var(--fg);
+            background: var(--postit);
+        }
+
+        .subject-chip.free {
+            background: #e8f5e9;
+            border-color: #2e7d32;
+        }
+
+        .subjects-note {
+            text-align: center;
+            margin-top: 16px;
+            font-family: var(--font-arabic);
+            font-size: 0.85rem;
+            opacity: 0.6;
+        }
+
+        .subjects-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .subjects-tab {
+            padding: 8px 22px;
+            font-family: var(--font-arabic);
+            font-size: 0.95rem;
+            font-weight: 700;
+            border: 2.5px solid var(--border);
+            border-radius: var(--radius-wobbly-sm);
+            background: var(--card-bg);
+            cursor: pointer;
+            box-shadow: var(--shadow-hard-sm);
+            transition: all 100ms ease;
+        }
+
+        .subjects-tab:hover {
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0px 0px var(--fg);
+        }
+
+        .subjects-tab.active {
+            background: var(--secondary);
+            color: #fff;
+            border-color: var(--secondary);
+        }
+
+        /* ── CTA ── */
+        .cta-section {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            padding: 40px 28px;
+            background: var(--postit);
+            border: 3px solid var(--border);
+            border-radius: var(--radius-wobbly-md);
+            box-shadow: var(--shadow-hard-lg);
+            text-align: center;
+            position: relative;
+            transform: rotate(-0.3deg);
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%) rotate(1.5deg);
+            width: 100px;
+            height: 24px;
+            background: rgba(45, 45, 45, 0.07);
+            border-radius: 4px;
+            border: 1.5px dashed rgba(45, 45, 45, 0.12);
+        }
+
+        .cta-section h2 {
+            font-family: var(--font-heading);
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .cta-section p {
+            font-family: var(--font-arabic);
+            font-size: 1.05rem;
+            opacity: 0.7;
+            margin-bottom: 20px;
+        }
+
+        .cta-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ── FOOTER ── */
+        .footer {
+            width: 100%;
+            padding: 28px 24px;
+            border-top: 3px dashed var(--muted);
+            text-align: center;
+        }
+
+        .footer p {
+            font-family: var(--font-arabic);
+            font-size: 0.85rem;
+            opacity: 0.5;
+        }
+
+        .footer a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .footer a:hover { color: var(--accent); }
 
         /* ══════════════════════════════════════════════
            BUTTONS
            ══════════════════════════════════════════════ */
         .btn {
-            font-family: var(--font-body);
-            font-size: 1.2rem;
-            font-weight: 400;
-            padding: 14px 32px;
+            font-family: var(--font-arabic);
+            font-size: 1.05rem;
+            font-weight: 700;
+            padding: 14px 30px;
             border: 3px solid var(--border);
             border-radius: var(--radius-wobbly-btn);
             cursor: pointer;
             transition: all 100ms ease;
             position: relative;
-            min-height: 52px;
+            min-height: 50px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -294,11 +777,12 @@
         }
 
         .btn-lg {
-            font-size: clamp(1.1rem, 3vw, 1.4rem);
-            padding: 16px 36px;
-            min-height: 56px;
-            width: 100%;
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            padding: 14px 32px;
+            min-height: 54px;
         }
+
+        .btn-full { width: 100%; }
 
         .btn:disabled {
             opacity: 0.55;
@@ -308,7 +792,7 @@
         }
 
         /* ══════════════════════════════════════════════
-           LOGIN / SIGNUP CARD CONTAINERS
+           LOGIN / SIGNUP CARDS
            ══════════════════════════════════════════════ */
         .login-container {
             min-height: 100vh;
@@ -324,19 +808,17 @@
             border: 3px solid var(--border);
             border-radius: var(--radius-wobbly-md);
             box-shadow: var(--shadow-hard-lg);
-            padding: 40px 32px;
+            padding: 36px 28px;
             width: 100%;
             max-width: 460px;
             position: relative;
             transform: rotate(-0.5deg);
             transition: transform 100ms ease;
+            animation: fadeInUp 0.4s ease-out;
         }
 
-        .login-card:hover {
-            transform: rotate(0deg);
-        }
+        .login-card:hover { transform: rotate(0deg); }
 
-        /* Tape decoration on card */
         .login-card::before {
             content: '';
             position: absolute;
@@ -351,7 +833,6 @@
             z-index: 2;
         }
 
-        /* Thumbtack decoration */
         .login-card::after {
             content: '';
             position: absolute;
@@ -366,48 +847,59 @@
             z-index: 3;
         }
 
+        .login-card-logo {
+            display: block;
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            box-shadow: var(--shadow-hard-sm);
+        }
+
         .login-card h2 {
             font-family: var(--font-heading);
-            font-size: clamp(1.6rem, 4vw, 2.2rem);
+            font-size: clamp(1.5rem, 4vw, 2rem);
             font-weight: 700;
             color: var(--fg);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             text-align: center;
             transform: rotate(0.5deg);
             line-height: 1.3;
         }
 
         .subtitle {
-            font-family: var(--font-body);
-            font-size: 1.1rem;
+            font-family: var(--font-arabic);
+            font-size: 1rem;
             color: var(--fg);
             opacity: 0.65;
             text-align: center;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
         }
 
         /* ══════════════════════════════════════════════
            FORM ELEMENTS
            ══════════════════════════════════════════════ */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .form-group label {
             display: block;
-            font-family: var(--font-heading);
-            font-size: 1.05rem;
+            font-family: var(--font-arabic);
+            font-size: 0.95rem;
             font-weight: 700;
             color: var(--fg);
-            margin-bottom: 8px;
-            transform: rotate(-0.3deg);
+            margin-bottom: 6px;
         }
 
         .form-group input[type="text"],
         .form-group input[type="password"] {
             width: 100%;
-            padding: 14px 18px;
-            font-family: var(--font-body);
+            padding: 12px 16px;
+            font-family: var(--font-arabic);
+            font-size: 1rem;
             color: var(--fg);
             background: var(--card-bg);
             border: 2.5px solid var(--border);
@@ -418,24 +910,19 @@
             appearance: none;
         }
 
-        .form-group input[type="text"]::placeholder,
-        .form-group input[type="password"]::placeholder {
+        .form-group input::placeholder {
             color: rgba(45, 45, 45, 0.35);
-            font-family: var(--font-body);
+            font-family: var(--font-arabic);
         }
 
-        .form-group input[type="text"]:focus,
-        .form-group input[type="password"]:focus {
+        .form-group input:focus {
             border-color: var(--secondary);
             box-shadow: 0 0 0 3px rgba(45, 93, 161, 0.15);
         }
 
-        /* ══════════════════════════════════════════════
-           RADIO GROUP
-           ══════════════════════════════════════════════ */
         .radio-group {
             display: flex;
-            gap: 16px;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
@@ -444,9 +931,10 @@
             align-items: center;
             gap: 8px;
             cursor: pointer;
-            font-family: var(--font-body);
-            font-size: 1.1rem;
-            padding: 10px 20px;
+            font-family: var(--font-arabic);
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 10px 18px;
             border: 2.5px solid var(--border);
             border-radius: var(--radius-wobbly-sm);
             background: var(--card-bg);
@@ -454,7 +942,7 @@
             transition: all 100ms ease;
             flex: 1;
             justify-content: center;
-            min-width: 100px;
+            min-width: 90px;
         }
 
         .radio-label:hover {
@@ -470,110 +958,63 @@
             cursor: pointer;
         }
 
-        .radio-label input[type="radio"]:checked + span {
-            color: var(--accent);
-            font-weight: 700;
-        }
-
         .radio-label:has(input:checked) {
             background: var(--postit);
             border-color: var(--accent);
-            box-shadow: var(--shadow-hard-sm);
-            transform: rotate(-0.5deg);
         }
 
-        /* ══════════════════════════════════════════════
-           FORM ACTIONS & FOOTER
-           ══════════════════════════════════════════════ */
         .form-actions {
-            margin-top: 28px;
+            margin-top: 24px;
             display: flex;
             flex-direction: column;
-            gap: 0;
         }
 
-        .form-actions .btn {
-            width: 100%;
-        }
+        .form-actions .btn { width: 100%; }
 
         .form-footer {
-            margin-top: 24px;
+            margin-top: 20px;
             text-align: center;
-            font-family: var(--font-body);
-            font-size: 1rem;
+            font-family: var(--font-arabic);
+            font-size: 0.9rem;
             color: var(--fg);
             opacity: 0.7;
-            position: relative;
         }
 
-        /* Dashed divider before footer */
         .form-footer::before {
             content: '';
             display: block;
             width: 60%;
             height: 0;
             border-top: 2px dashed var(--muted);
-            margin: 0 auto 16px auto;
+            margin: 0 auto 14px auto;
         }
 
         .form-footer a {
             color: var(--secondary);
             text-decoration: none;
             font-weight: 700;
-            font-family: var(--font-heading);
-            position: relative;
             transition: color 100ms ease;
         }
 
-        .form-footer a::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            height: 2.5px;
-            background: var(--secondary);
-            border-radius: var(--radius-wobbly-sm);
-            transform: scaleX(0);
-            transition: transform 150ms ease;
-            transform-origin: center;
-        }
-
-        .form-footer a:hover {
-            color: var(--accent);
-        }
-
-        .form-footer a:hover::after {
-            background: var(--accent);
-            transform: scaleX(1);
-        }
+        .form-footer a:hover { color: var(--accent); }
 
         /* ══════════════════════════════════════════════
            ERROR / STATUS MESSAGES
            ══════════════════════════════════════════════ */
         .error-msg,
         .status-msg.error {
-            font-family: var(--font-body);
-            font-size: 1rem;
+            font-family: var(--font-arabic);
+            font-size: 0.9rem;
             color: var(--accent);
             background: #fff0f0;
             border: 2.5px solid var(--accent);
             border-radius: var(--radius-wobbly-sm);
-            padding: 12px 18px;
-            margin-top: 16px;
-            margin-bottom: 16px;
+            padding: 10px 16px;
+            margin-top: 14px;
+            margin-bottom: 14px;
             text-align: center;
             transform: rotate(-0.3deg);
             box-shadow: 2px 2px 0px 0px rgba(255, 77, 77, 0.2);
-            position: relative;
-        }
-
-        /* Exclamation doodle */
-        .error-msg::before,
-        .status-msg.error::before {
-            content: '⚠';
-            margin-left: 6px;
-            font-size: 1.1rem;
         }
 
         /* ══════════════════════════════════════════════
@@ -585,52 +1026,204 @@
             transform: rotate(0.5deg);
         }
 
-        #success-container .login-card:hover {
-            transform: rotate(-0.3deg);
-        }
-
-        #success-container h2 {
-            font-size: clamp(1.8rem, 5vw, 2.5rem);
-        }
-
-        #success-container .loading-content {
-            margin-top: 20px;
-        }
+        #success-container .login-card:hover { transform: rotate(-0.3deg); }
+        #success-container h2 { font-size: clamp(1.6rem, 5vw, 2.3rem); }
+        #success-container .loading-content { margin-top: 20px; }
 
         /* ══════════════════════════════════════════════
-           APP IFRAME
+           APP IFRAME - CRITICAL MOBILE FIX
            ══════════════════════════════════════════════ */
         .app-frame {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh; /* dynamic viewport height for mobile */
             border: none;
             z-index: 10000;
             background: var(--bg);
+            /* CRITICAL: Enable touch scrolling inside iframe */
+            -webkit-overflow-scrolling: touch;
+            overflow: auto;
+            /* Remove any pointer blocking */
+            touch-action: auto;
+            /* Ensure iframe is interactive */
+            pointer-events: auto;
+        }
+
+        /* When iframe is active, prevent body scroll */
+        body.iframe-active {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        /* iOS Safari specific fixes */
+        @supports (-webkit-touch-callout: none) {
+            .app-frame {
+                height: -webkit-fill-available;
+                min-height: 100vh;
+                min-height: 100dvh;
+            }
         }
 
         /* ══════════════════════════════════════════════
-           DECORATIVE ELEMENTS & FLOURISHES
+           DISPLAY USERNAME TAG
            ══════════════════════════════════════════════ */
+        #display-username {
+            color: var(--secondary);
+            font-family: var(--font-arabic);
+            font-size: 1.05rem;
+            font-weight: 800;
+            background: var(--postit);
+            padding: 2px 10px;
+            border-radius: var(--radius-wobbly-sm);
+            border: 1.5px solid var(--border);
+            display: inline-block;
+            transform: rotate(-0.5deg);
+            box-shadow: 1px 1px 0px 0px var(--fg);
+        }
 
-        /* Floating doodle circles - desktop only */
-        @media (min-width: 768px) {
-            .main-container::after {
-                content: '';
-                position: absolute;
-                top: 15%;
-                left: 8%;
-                width: 60px;
-                height: 60px;
-                border: 3px dashed var(--muted);
-                border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
-                animation: gentleBounce 3s ease-in-out infinite;
-                opacity: 0.5;
-                pointer-events: none;
+        /* ══════════════════════════════════════════════
+           ANIMATIONS
+           ══════════════════════════════════════════════ */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px) rotate(-1deg); }
+            to   { opacity: 1; transform: translateY(0) rotate(-0.5deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        .feature-card:nth-child(1) { animation: fadeInUp 0.4s ease-out 0.1s both; }
+        .feature-card:nth-child(2) { animation: fadeInUp 0.4s ease-out 0.2s both; }
+        .feature-card:nth-child(3) { animation: fadeInUp 0.4s ease-out 0.3s both; }
+        .feature-card:nth-child(4) { animation: fadeInUp 0.4s ease-out 0.4s both; }
+
+        .step-item:nth-child(1) { animation: slideInRight 0.4s ease-out 0.1s both; }
+        .step-item:nth-child(2) { animation: slideInRight 0.4s ease-out 0.25s both; }
+        .step-item:nth-child(3) { animation: slideInRight 0.4s ease-out 0.4s both; }
+        .step-item:nth-child(4) { animation: slideInRight 0.4s ease-out 0.55s both; }
+
+        /* ══════════════════════════════════════════════
+           SCROLLBAR
+           ══════════════════════════════════════════════ */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb {
+            background: var(--muted);
+            border: 2px solid var(--bg);
+            border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: var(--fg); }
+        ::selection { background: var(--postit); color: var(--fg); }
+
+        /* ══════════════════════════════════════════════
+           SOUND TOGGLE
+           ══════════════════════════════════════════════ */
+        .sound-toggle {
+            position: fixed;
+            bottom: 16px;
+            left: 16px;
+            width: 42px;
+            height: 42px;
+            border: 2.5px solid var(--border);
+            border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-hard-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            z-index: 9998;
+            transition: all 100ms ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .sound-toggle:hover {
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0px 0px var(--fg);
+        }
+
+        .sound-toggle:active {
+            transform: translate(2px, 2px);
+            box-shadow: none;
+        }
+
+        .sound-toggle.muted { opacity: 0.5; }
+
+        /* ══════════════════════════════════════════════
+           RESPONSIVE
+           ══════════════════════════════════════════════ */
+        @media (max-width: 480px) {
+            body { font-size: 16px; background-size: 20px 20px; }
+
+            .navbar { padding: 10px 14px; }
+            .nav-logo img { width: 34px; height: 34px; }
+            .nav-logo-text { font-size: 1.1rem; }
+            .nav-btn { padding: 6px 12px; font-size: 0.8rem; }
+
+            .hero-section { padding: 30px 16px 20px; }
+            .hero-logo { width: 90px; height: 90px; margin-bottom: 14px; }
+            .hero-stats { gap: 16px; }
+            .stat-number { font-size: 1.4rem; }
+
+            .section { padding: 36px 16px; }
+            .feature-card { padding: 20px 16px; }
+            .feature-icon { width: 48px; height: 48px; font-size: 1.5rem; }
+
+            .step-number { width: 44px; height: 44px; min-width: 44px; font-size: 1.2rem; }
+            .step-content { padding: 12px 16px; }
+
+            .subject-chip { padding: 8px 10px; font-size: 0.8rem; }
+
+            .cta-section { padding: 30px 18px; margin: 0 12px 30px; }
+
+            .login-card {
+                padding: 28px 20px;
+                margin: 0 8px;
+                transform: rotate(0deg);
+                box-shadow: var(--shadow-hard);
             }
 
+            .login-card::before { width: 80px; height: 20px; }
+            .login-card::after { right: 24px; width: 14px; height: 14px; }
+            .login-card-logo { width: 50px; height: 50px; }
+
+            .btn-lg { padding: 12px 22px; font-size: 0.95rem; }
+
+            .form-group input[type="text"],
+            .form-group input[type="password"] {
+                padding: 10px 14px;
+                font-size: 0.95rem;
+            }
+
+            .radio-group { gap: 8px; }
+            .radio-label { padding: 8px 12px; font-size: 0.9rem; }
+
+            .hero-doodle-1, .hero-doodle-2 { display: none; }
+            .sound-toggle { bottom: 12px; left: 12px; width: 38px; height: 38px; font-size: 1rem; }
+        }
+
+        @media (min-width: 481px) and (max-width: 768px) {
+            .login-card { padding: 32px 24px; }
+            .hero-section { padding: 40px 20px 28px; }
+            .hero-logo { width: 100px; height: 100px; }
+        }
+
+        @media (min-width: 768px) {
             .login-container::after {
                 content: '';
                 position: absolute;
@@ -645,226 +1238,243 @@
                 pointer-events: none;
             }
         }
-
-        /* Corner frame marks on main container - desktop */
-        @media (min-width: 768px) {
-            .hero::before {
-                content: '';
-                position: absolute;
-                top: -20px;
-                right: -30px;
-                width: 30px;
-                height: 30px;
-                border-top: 3px solid var(--muted);
-                border-right: 3px solid var(--muted);
-                border-radius: 0 8px 0 0;
-                opacity: 0.5;
-                pointer-events: none;
-            }
-
-            .hero::after {
-                content: '';
-                position: absolute;
-                bottom: -20px;
-                left: -30px;
-                width: 30px;
-                height: 30px;
-                border-bottom: 3px solid var(--muted);
-                border-left: 3px solid var(--muted);
-                border-radius: 0 0 0 8px;
-                opacity: 0.5;
-                pointer-events: none;
-            }
-        }
-
-        /* ══════════════════════════════════════════════
-           SCROLLBAR STYLING
-           ══════════════════════════════════════════════ */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--muted);
-            border: 2px solid var(--bg);
-            border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--fg);
-        }
-
-        /* ══════════════════════════════════════════════
-           SELECTION
-           ══════════════════════════════════════════════ */
-        ::selection {
-            background: var(--postit);
-            color: var(--fg);
-        }
-
-        /* ══════════════════════════════════════════════
-           RESPONSIVE ADJUSTMENTS
-           ══════════════════════════════════════════════ */
-        @media (max-width: 480px) {
-            body {
-                font-size: 16px;
-                background-size: 20px 20px;
-            }
-
-            .login-card {
-                padding: 32px 22px;
-                margin: 0 8px;
-                transform: rotate(0deg);
-                box-shadow: var(--shadow-hard);
-            }
-
-            .login-card::before {
-                width: 80px;
-                height: 20px;
-            }
-
-            .login-card::after {
-                right: 24px;
-                width: 14px;
-                height: 14px;
-            }
-
-            .btn-lg {
-                padding: 14px 24px;
-                font-size: 1.1rem;
-            }
-
-            .form-group input[type="text"],
-            .form-group input[type="password"] {
-                padding: 12px 14px;
-                font-size: 1rem;
-            }
-
-            .radio-group {
-                gap: 10px;
-            }
-
-            .radio-label {
-                padding: 8px 14px;
-                font-size: 1rem;
-            }
-
-            .actions {
-                max-width: 320px;
-            }
-
-            .main-container::before {
-                width: 90px;
-                height: 22px;
-            }
-        }
-
-        @media (min-width: 481px) and (max-width: 768px) {
-            .login-card {
-                padding: 36px 28px;
-            }
-        }
-
-        /* ══════════════════════════════════════════════
-           ANIMATIONS
-           ══════════════════════════════════════════════ */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px) rotate(-1deg);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) rotate(-0.5deg);
-            }
-        }
-
-        .login-card {
-            animation: fadeInUp 0.4s ease-out;
-        }
-
-        .hero-content {
-            animation: fadeInUp 0.5s ease-out;
-        }
-
-        .actions {
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        /* Subtle jiggle on card focus-within */
-        .login-card:focus-within {
-            transform: rotate(0deg);
-        }
-
-        /* ══════════════════════════════════════════════
-           DISPLAY USERNAME STRONG TAG
-           ══════════════════════════════════════════════ */
-        #display-username {
-            color: var(--secondary);
-            font-family: var(--font-heading);
-            font-size: 1.15rem;
-            background: var(--postit);
-            padding: 2px 10px;
-            border-radius: var(--radius-wobbly-sm);
-            border: 1.5px solid var(--border);
-            display: inline-block;
-            transform: rotate(-0.5deg);
-            box-shadow: 1px 1px 0px 0px var(--fg);
-        }
     </style>
 </head>
 <body>
 
-    <!-- ══════════════════════════════════════════════ -->
-    <!--  VIEW 1: Loading Screen                    -->
-    <!-- ══════════════════════════════════════════════ -->
+    <!-- SOUND TOGGLE -->
+    <button class="sound-toggle" id="sound-toggle" onclick="toggleSound()" title="تشغيل/إيقاف الصوت">🔊</button>
+
+    <!-- VIEW 1: Loading Screen -->
     <div id="loading-screen" class="loading-screen">
         <div class="loading-content">
+            <img src="logo.png" alt="Smart Class" class="loading-logo">
             <div class="spinner"></div>
             <p id="loading-text">جاري التحقق...</p>
         </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════ -->
-    <!--  VIEW 2: Main Buttons (signup/login)       -->
-    <!-- ══════════════════════════════════════════════ -->
+    <!-- VIEW 2: Main Landing Page -->
     <div id="main-container" class="main-container" style="display:none;">
-        <div class="hero">
-            <div class="hero-content">
-                <h1 class="logo-text">🎓 ServerClass</h1>
-                <p class="tagline">منصة التعليم الذكي بالذكاء الاصطناعي</p>
+
+        <!-- Navbar -->
+        <nav class="navbar">
+            <a href="#" class="nav-logo" onclick="return false;">
+                <img src="logo.png" alt="Smart Class">
+                <span class="nav-logo-text">Smart Class</span>
+            </a>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="playClick(); showView('login-username')">تسجيل الدخول</button>
+                <button class="nav-btn nav-btn-primary" onclick="playClick(); showView('signup')">إنشاء حساب</button>
             </div>
-        </div>
-        <div class="actions">
-            <button class="btn btn-primary btn-lg" onclick="showView('signup')">
-                إنشاء حساب جديد
-            </button>
-            <button class="btn btn-secondary btn-lg" onclick="showView('login-username')">
-                تسجيل الدخول
-            </button>
-        </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-doodle-1"></div>
+            <div class="hero-doodle-2"></div>
+
+            <img src="logo.png" alt="Smart Class" class="hero-logo">
+            <div class="hero-badge">🇱🇾 مصممة لطلاب الثانوية العامة في ليبيا</div>
+
+            <h1 class="hero-title">
+                مدرّستك الذكية<br>
+                <span class="highlight">متاحة 24 ساعة</span>
+            </h1>
+
+            <p class="hero-subtitle">
+                سمارت كلاس منصة تعليمية متكاملة تعمل بالذكاء الاصطناعي، توفر شرح تفاعلي بالصوت والصورة على سبورة ذكية، محادثة مع مدرّسة افتراضية، وامتحانات تجريبية — كل ما تحتاجه لإهادة الثانوية في مكان واحد.
+            </p>
+
+            <div class="hero-actions">
+                <button class="btn btn-primary btn-lg" onclick="playClick(); showView('signup')">
+                    🚀 ابدأ مجاناً الآن
+                </button>
+                <button class="btn btn-secondary btn-lg" onclick="playClick(); showView('login-username')">
+                    تسجيل الدخول
+                </button>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">+20</span>
+                    <span class="stat-label">مادة دراسية</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">AI</span>
+                    <span class="stat-label">ذكاء اصطناعي</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">24/7</span>
+                    <span class="stat-label">متاحة دائماً</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">🎯</span>
+                    <span class="stat-label">علمي + أدبي</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-tag">✨ المميزات</div>
+                <h2 class="section-title">كل ما تحتاجه في منصة واحدة</h2>
+                <p class="section-desc">أدوات تعليمية ذكية تحاكي وجود مدرّسة خصوصية حقيقية</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🖥️</div>
+                    <h3>السبورة التفاعلية الذكية</h3>
+                    <p>المدرّسة الذكية تشرح على سبورة حقيقية خطوة بخطوة — ترسم أشكال هندسية، تكتب معادلات، تعرض صفحات الكتاب، وتتحدث بصوت عربي طبيعي. تماماً كأنك في الفصل!</p>
+                    <span class="feature-tag tag-ai">🤖 ذكاء اصطناعي</span>
+                    <span class="feature-tag tag-voice">🔊 صوت وصورة</span>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>المحادثة مع المدرّسة الافتراضية</h3>
+                    <p>اسأل أي سؤال بالكتابة أو بالصوت أو بإرسال صورة من الكتاب! المدرّسة الذكية تفهم سؤالك وتحدد الفصل المناسب وتشرح لك بالتفصيل مستندة على المنهج الدراسي.</p>
+                    <span class="feature-tag tag-ai">🤖 ذكاء اصطناعي</span>
+                    <span class="feature-tag tag-new">📸 تحليل صور</span>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3>امتحانات تجريبية ذكية</h3>
+                    <p>اختر المادة والباب ومستوى الصعوبة وعدد الأسئلة — النظام يولّد أسئلة اختيار من متعدد مبنية على المنهج وأسئلة السنوات السابقة مع تصحيح فوري.</p>
+                    <span class="feature-tag tag-ai">🤖 توليد ذكي</span>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🏪</div>
+                    <h3>المتجر ونظام الرصيد</h3>
+                    <p>مادة التربية الإسلامية مجانية للجميع! باقي المواد تُشترى بكروت شحن خاصة بالمنصة. يوجد كروت تفتح جميع مواد القسم العلمي أو الأدبي دفعة واحدة.</p>
+                    <span class="feature-tag tag-free">🎁 مادة مجانية</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-tag">📋 كيف تبدأ؟</div>
+                <h2 class="section-title">4 خطوات فقط</h2>
+                <p class="section-desc">ابدأ رحلتك التعليمية في دقائق</p>
+            </div>
+
+            <div class="steps-container">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>أنشئ حسابك</h4>
+                        <p>اختر اسم مستخدم وكلمة مرور وحدد قسمك (علمي أو أدبي)</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>تحقق عبر تيليجرام</h4>
+                        <p>أرسل رمز التحقق من بوت تيليجرام الخاص بالمنصة لتأكيد حسابك</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>اختر مادتك</h4>
+                        <p>التربية الإسلامية مجانية! باقي المواد تحتاج كرت شحن من وكلاء المنصة</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>ابدأ التعلم!</h4>
+                        <p>استخدم السبورة الذكية، المحادثة، أو الامتحانات — مدرّستك متاحة 24 ساعة</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Subjects -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-tag">📚 المواد الدراسية</div>
+                <h2 class="section-title">جميع مواد الثانوية العامة</h2>
+                <p class="section-desc">القسم العلمي والأدبي — المنهج الليبي الكامل</p>
+            </div>
+
+            <div class="subjects-tabs">
+                <button class="subjects-tab active" onclick="playClick(); showSubjects('scientific')" id="tab-scientific">القسم العلمي</button>
+                <button class="subjects-tab" onclick="playClick(); showSubjects('literary')" id="tab-literary">القسم الأدبي</button>
+            </div>
+
+            <div id="subjects-scientific" class="subjects-grid">
+                <div class="subject-chip free">التربية الإسلامية 🕌</div>
+                <div class="subject-chip">اللغة الإنجليزية 🇬🇧</div>
+                <div class="subject-chip">الرياضيات 📐</div>
+                <div class="subject-chip">تقنية المعلومات 💻</div>
+                <div class="subject-chip">أساس الإحصاء 📊</div>
+                <div class="subject-chip">الكيمياء ⚗️</div>
+                <div class="subject-chip">الفيزياء الكهربائية ⚡</div>
+                <div class="subject-chip">الفيزياء الميكانيكية ⚙️</div>
+                <div class="subject-chip">الأحياء 🧬</div>
+                <div class="subject-chip">الدراسات الأدبية 📖</div>
+                <div class="subject-chip">الدراسات اللغوية 📝</div>
+            </div>
+
+            <div id="subjects-literary" class="subjects-grid" style="display:none;">
+                <div class="subject-chip free">التربية الإسلامية 🕌</div>
+                <div class="subject-chip">اللغة الإنجليزية 🇬🇧</div>
+                <div class="subject-chip">الإحصاء 📊</div>
+                <div class="subject-chip">الأدب والنصوص 📜</div>
+                <div class="subject-chip">الفلسفة 🤔</div>
+                <div class="subject-chip">المطالعة والإنشاء ✍️</div>
+                <div class="subject-chip">النحو والصرف والإملاء 📝</div>
+                <div class="subject-chip">النقد الأدبي 🎭</div>
+                <div class="subject-chip">تاريخ الوطن العربي 🗺️</div>
+                <div class="subject-chip">تقنية المعلومات 💻</div>
+                <div class="subject-chip">جغرافيا البيئة 🌍</div>
+                <div class="subject-chip">علم النفس 🧠</div>
+                <div class="subject-chip">علم الاجتماع 👥</div>
+            </div>
+
+            <p class="subjects-note">🟢 المواد باللون الأخضر مجانية لجميع الطلاب</p>
+        </section>
+
+        <!-- CTA -->
+        <section class="section">
+            <div class="cta-section">
+                <h2>🎓 جاهز تبدأ رحلتك؟</h2>
+                <p>انضم لسمارت كلاس الآن وابدأ التعلم مع مدرّستك الذكية — مادة التربية الإسلامية مجانية!</p>
+                <div class="cta-actions">
+                    <button class="btn btn-primary btn-lg" onclick="playClick(); showView('signup')">إنشاء حساب مجاني</button>
+                    <button class="btn btn-secondary btn-lg" onclick="playClick(); showView('login-username')">عندي حساب</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2026 سمارت كلاس — منصة التعليم الذكي بالذكاء الاصطناعي 🇱🇾</p>
+            <p style="margin-top:6px;">صُنعت بـ ❤️ لطلاب الثانوية العامة في ليبيا</p>
+        </footer>
+
         <div id="main-error" class="error-msg" style="display:none;"></div>
     </div>
 
-    <!-- ══════════════════════════════════════════════ -->
-    <!--  VIEW 3: Signup Form                       -->
-    <!-- ══════════════════════════════════════════════ -->
+    <!-- VIEW 3: Signup Form -->
     <div id="signup-container" class="login-container" style="display:none;">
         <div class="login-card">
-            <h2>🎓 إنشاء حساب جديد</h2>
-            <p class="subtitle">أنشئ حسابك في ServerClass</p>
+            <img src="logo.png" alt="Smart Class" class="login-card-logo">
+            <h2>إنشاء حساب جديد</h2>
+            <p class="subtitle">أنشئ حسابك في سمارت كلاس</p>
 
             <div id="signup-error" class="status-msg error" style="display:none;"></div>
 
-
             <div class="form-group">
                 <label for="signup-username">اسم المستخدم</label>
-                <input type="text" id="signup-username" placeholder="أدخل اسم المستخدم (3 أحرف على الأقل)"
-                       autocomplete="username">
+                <input type="text" id="signup-username" placeholder="أدخل اسم المستخدم (3 أحرف على الأقل)" autocomplete="username">
             </div>
 
             <div class="form-group">
@@ -892,22 +1502,21 @@
             </div>
 
             <div class="form-actions">
-                <button id="btn-to-verify" class="btn btn-primary" onclick="goToVerification()">
+                <button id="btn-to-verify" class="btn btn-primary" onclick="playClick(); goToVerification()">
                     التالي - التحقق من تيليجرام
                 </button>
             </div>
 
             <div class="form-footer">
-                <p>لديك حساب بالفعل؟ <a href="#" onclick="showView('login-username');return false;">تسجيل الدخول</a></p>
+                <p>لديك حساب بالفعل؟ <a href="#" onclick="playClick(); showView('login-username');return false;">تسجيل الدخول</a></p>
             </div>
         </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════ -->
-    <!--  VIEW 4: Telegram Verification             -->
-    <!-- ══════════════════════════════════════════════ -->
+    <!-- VIEW 4: Telegram Verification -->
     <div id="verify-container" class="login-container" style="display:none;">
         <div class="login-card">
+            <img src="logo.png" alt="Smart Class" class="login-card-logo">
             <h2>📱 التحقق من تيليجرام</h2>
             <p class="subtitle">أدخل رمز التحقق من بوت تيليجرام</p>
 
@@ -921,22 +1530,21 @@
             </div>
 
             <div class="form-actions">
-                <button id="btn-signup-submit" class="btn btn-primary" onclick="submitSignup()">
+                <button id="btn-signup-submit" class="btn btn-primary" onclick="playClick(); submitSignup()">
                     إنشاء الحساب
                 </button>
-                <button class="btn btn-secondary" onclick="showView('signup')" style="margin-top:10px;">
+                <button class="btn btn-secondary" onclick="playClick(); showView('signup')" style="margin-top:10px;">
                     رجوع
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════ -->
-    <!--  VIEW 5: Login - Username                  -->
-    <!-- ══════════════════════════════════════════════ -->
+    <!-- VIEW 5: Login - Username -->
     <div id="login-username-container" class="login-container" style="display:none;">
         <div class="login-card">
-            <h2>🎓 تسجيل الدخول</h2>
+            <img src="logo.png" alt="Smart Class" class="login-card-logo">
+            <h2>تسجيل الدخول</h2>
             <p class="subtitle">أدخل اسم المستخدم للمتابعة</p>
 
             <div id="login-username-error" class="status-msg error" style="display:none;"></div>
@@ -949,22 +1557,21 @@
             </div>
 
             <div class="form-actions">
-                <button id="btn-login-next" class="btn btn-primary" onclick="submitUsername()">
+                <button id="btn-login-next" class="btn btn-primary" onclick="playClick(); submitUsername()">
                     التالي
                 </button>
             </div>
 
             <div class="form-footer">
-                <p>ليس لديك حساب؟ <a href="#" onclick="showView('signup');return false;">إنشاء حساب جديد</a></p>
+                <p>ليس لديك حساب؟ <a href="#" onclick="playClick(); showView('signup');return false;">إنشاء حساب جديد</a></p>
             </div>
         </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════ -->
-    <!--  VIEW 6: Login - Password                  -->
-    <!-- ══════════════════════════════════════════════ -->
+    <!-- VIEW 6: Login - Password -->
     <div id="login-password-container" class="login-container" style="display:none;">
         <div class="login-card">
+            <img src="logo.png" alt="Smart Class" class="login-card-logo">
             <h2>🔐 كلمة المرور</h2>
             <p class="subtitle">أدخل كلمة المرور للمستخدم <strong id="display-username"></strong></p>
 
@@ -978,25 +1585,24 @@
             </div>
 
             <div class="form-actions">
-                <button id="btn-login-submit" class="btn btn-primary" onclick="submitLogin()">
+                <button id="btn-login-submit" class="btn btn-primary" onclick="playClick(); submitLogin()">
                     تسجيل الدخول
                 </button>
-                <button class="btn btn-secondary" onclick="showView('login-username')" style="margin-top:10px;">
+                <button class="btn btn-secondary" onclick="playClick(); showView('login-username')" style="margin-top:10px;">
                     رجوع
                 </button>
             </div>
 
             <div class="form-footer">
-                <p>ليس لديك حساب؟ <a href="#" onclick="showView('signup');return false;">إنشاء حساب جديد</a></p>
+                <p>ليس لديك حساب؟ <a href="#" onclick="playClick(); showView('signup');return false;">إنشاء حساب جديد</a></p>
             </div>
         </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════ -->
-    <!--  VIEW 7: Success                           -->
-    <!-- ══════════════════════════════════════════════ -->
+    <!-- VIEW 7: Success -->
     <div id="success-container" class="login-container" style="display:none;">
         <div class="login-card">
+            <img src="logo.png" alt="Smart Class" class="login-card-logo">
             <h2>✅ تم بنجاح!</h2>
             <p class="subtitle" id="success-detail">جاري تحويلك...</p>
             <div class="loading-content">
@@ -1005,22 +1611,142 @@
         </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════ -->
-    <!--  VIEW 8: App iframe                        -->
-    <!-- ══════════════════════════════════════════════ -->
+    <!-- VIEW 8: App iframe -->
     <iframe id="app-frame" class="app-frame" style="display:none;"
             allow="microphone; camera; autoplay; clipboard-write"
-            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads">
+            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads allow-top-navigation">
     </iframe>
 
-    <!-- ══════════════════════════════════════════════ -->
-    <!--  SCRIPTS                                   -->
-    <!-- ══════════════════════════════════════════════ -->
+    <!-- SCRIPTS -->
     <script src="js/fingerprint.js"></script>
     <script src="js/api.js"></script>
     <script>
     (function() {
         'use strict';
+
+        // ═══════════════════════════════════════
+        //  SOUND SYSTEM (Web Audio API)
+        // ═══════════════════════════════════════
+
+        var AudioCtx = window.AudioContext || window.webkitAudioContext;
+        var _audioCtx = null;
+        var _soundEnabled = true;
+
+        function getAudioCtx() {
+            if (!_audioCtx) {
+                try { _audioCtx = new AudioCtx(); } catch(e) {}
+            }
+            if (_audioCtx && _audioCtx.state === 'suspended') {
+                _audioCtx.resume();
+            }
+            return _audioCtx;
+        }
+
+        function playTone(freq, duration, type, volume) {
+            if (!_soundEnabled) return;
+            var ctx = getAudioCtx();
+            if (!ctx) return;
+            try {
+                var osc = ctx.createOscillator();
+                var gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = type || 'sine';
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                gain.gain.setValueAtTime(volume || 0.08, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (duration || 0.15));
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + (duration || 0.15));
+            } catch(e) {}
+        }
+
+        window.playClick = function() {
+            playTone(800, 0.08, 'sine', 0.06);
+            setTimeout(function() { playTone(1000, 0.05, 'sine', 0.04); }, 30);
+        };
+
+        window.playSuccess = function() {
+            playTone(523, 0.15, 'sine', 0.08);
+            setTimeout(function() { playTone(659, 0.15, 'sine', 0.08); }, 120);
+            setTimeout(function() { playTone(784, 0.2, 'sine', 0.1); }, 240);
+        };
+
+        window.playError = function() {
+            playTone(400, 0.12, 'square', 0.05);
+            setTimeout(function() { playTone(300, 0.15, 'square', 0.04); }, 100);
+        };
+
+        window.playWhoosh = function() {
+            if (!_soundEnabled) return;
+            var ctx = getAudioCtx();
+            if (!ctx) return;
+            try {
+                var bufferSize = ctx.sampleRate * 0.3;
+                var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                var data = buffer.getChannelData(0);
+                for (var i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+                }
+                var source = ctx.createBufferSource();
+                source.buffer = buffer;
+                var bandpass = ctx.createBiquadFilter();
+                bandpass.type = 'bandpass';
+                bandpass.frequency.setValueAtTime(1000, ctx.currentTime);
+                bandpass.frequency.exponentialRampToValueAtTime(3000, ctx.currentTime + 0.15);
+                bandpass.Q.value = 2;
+                var gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.04, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+                source.connect(bandpass);
+                bandpass.connect(gain);
+                gain.connect(ctx.destination);
+                source.start();
+            } catch(e) {}
+        };
+
+        window.playTick = function() {
+            playTone(1200, 0.03, 'sine', 0.03);
+        };
+
+        window.toggleSound = function() {
+            _soundEnabled = !_soundEnabled;
+            var btn = document.getElementById('sound-toggle');
+            if (_soundEnabled) {
+                btn.textContent = '🔊';
+                btn.classList.remove('muted');
+                playClick();
+            } else {
+                btn.textContent = '🔇';
+                btn.classList.add('muted');
+            }
+        };
+
+        document.addEventListener('input', function(e) {
+            if (e.target.tagName === 'INPUT') playTick();
+        });
+
+        // ═══════════════════════════════════════
+        //  SUBJECTS TABS
+        // ═══════════════════════════════════════
+
+        window.showSubjects = function(type) {
+            var sci = document.getElementById('subjects-scientific');
+            var lit = document.getElementById('subjects-literary');
+            var tabSci = document.getElementById('tab-scientific');
+            var tabLit = document.getElementById('tab-literary');
+
+            if (type === 'scientific') {
+                sci.style.display = 'grid';
+                lit.style.display = 'none';
+                tabSci.classList.add('active');
+                tabLit.classList.remove('active');
+            } else {
+                sci.style.display = 'none';
+                lit.style.display = 'grid';
+                tabSci.classList.remove('active');
+                tabLit.classList.add('active');
+            }
+        };
 
         // ═══════════════════════════════════════
         //  STATE
@@ -1060,40 +1786,61 @@
                 var el = document.getElementById(ALL_VIEWS[i]);
                 if (el) el.style.display = 'none';
             }
+            // Always remove iframe-active when hiding
+            document.body.classList.remove('iframe-active');
         }
 
         window.showView = function(viewName) {
             hideAll();
             hideAllErrors();
 
+            var soundBtn = document.getElementById('sound-toggle');
+
             switch (viewName) {
                 case 'loading':
                     show('loading-screen', 'flex');
+                    if (soundBtn) soundBtn.style.display = 'none';
                     break;
                 case 'main':
                     show('main-container', 'flex');
+                    if (soundBtn) soundBtn.style.display = 'flex';
+                    playWhoosh();
+                    window.scrollTo(0, 0);
                     break;
                 case 'signup':
                     show('signup-container', 'flex');
+                    if (soundBtn) soundBtn.style.display = 'flex';
+                    playWhoosh();
                     focusEl('signup-username');
                     break;
                 case 'verify':
                     show('verify-container', 'flex');
+                    if (soundBtn) soundBtn.style.display = 'flex';
+                    playWhoosh();
                     focusEl('verify-code');
                     break;
                 case 'login-username':
                     show('login-username-container', 'flex');
+                    if (soundBtn) soundBtn.style.display = 'flex';
+                    playWhoosh();
                     focusEl('login-username');
                     break;
                 case 'login-password':
                     show('login-password-container', 'flex');
+                    if (soundBtn) soundBtn.style.display = 'flex';
+                    playWhoosh();
                     focusEl('login-password');
                     break;
                 case 'success':
                     show('success-container', 'flex');
+                    if (soundBtn) soundBtn.style.display = 'flex';
+                    playSuccess();
                     break;
                 case 'app':
                     show('app-frame', 'block');
+                    if (soundBtn) soundBtn.style.display = 'none';
+                    // CRITICAL: Lock body scroll so iframe gets all touch events
+                    document.body.classList.add('iframe-active');
                     break;
             }
         };
@@ -1107,7 +1854,7 @@
             setTimeout(function() {
                 var el = document.getElementById(id);
                 if (el) el.focus();
-            }, 100);
+            }, 150);
         }
 
         // ═══════════════════════════════════════
@@ -1131,6 +1878,7 @@
             if (el) {
                 el.textContent = msg;
                 el.style.display = 'block';
+                playError();
             }
         }
 
@@ -1201,9 +1949,7 @@
 
         function getToken() {
             var stored = loadToken();
-            if (stored && stored.trim()) {
-                return stored.trim();
-            }
+            if (stored && stored.trim()) return stored.trim();
             var newToken = DeviceFingerprint.getToken();
             saveToken(newToken);
             return newToken;
@@ -1224,9 +1970,16 @@
                 '&username=' + encodeURIComponent(username);
 
             hideAll();
+
             var frame = document.getElementById('app-frame');
             frame.src = autoUrl;
             frame.style.display = 'block';
+
+            // Lock body for mobile iframe touch
+            document.body.classList.add('iframe-active');
+
+            var soundBtn = document.getElementById('sound-toggle');
+            if (soundBtn) soundBtn.style.display = 'none';
         }
 
         // ═══════════════════════════════════════
@@ -1279,9 +2032,7 @@
                     showError('signup-error', 'اسم المستخدم موجود مسبقاً! اختر اسماً آخر.');
                     return;
                 }
-
                 showView('verify');
-
             }).catch(function(e) {
                 showView('signup');
                 showError('signup-error', 'خطأ في الاتصال. تحقق من اتصالك بالإنترنت.');
@@ -1584,6 +2335,7 @@
             if (data.type === 'force_logout') {
                 document.getElementById('app-frame').src = '';
                 document.getElementById('app-frame').style.display = 'none';
+                document.body.classList.remove('iframe-active');
                 clearTokens();
                 clearUserInfo();
                 showView('login-username');
@@ -1593,6 +2345,7 @@
             if (data.type === 'logout') {
                 document.getElementById('app-frame').src = '';
                 document.getElementById('app-frame').style.display = 'none';
+                document.body.classList.remove('iframe-active');
                 clearTokens();
                 clearUserInfo();
                 showView('main');
@@ -1602,6 +2355,7 @@
                 console.log('Auto-login failed:', data.reason);
                 document.getElementById('app-frame').src = '';
                 document.getElementById('app-frame').style.display = 'none';
+                document.body.classList.remove('iframe-active');
                 clearTokens();
                 clearUserInfo();
                 showView('main');
@@ -1611,6 +2365,7 @@
                 console.log('Session expired, re-trying auto-login...');
                 document.getElementById('app-frame').src = '';
                 document.getElementById('app-frame').style.display = 'none';
+                document.body.classList.remove('iframe-active');
                 init();
             }
         });
@@ -1666,7 +2421,7 @@
                 }
             }
 
-            // ── NOTHING WORKED: Show main buttons ──
+            // ── NOTHING WORKED: Show main landing page ──
             console.log('No auto-login, showing main page');
             showView('main');
         }
