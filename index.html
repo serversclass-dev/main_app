@@ -846,7 +846,6 @@
             box-shadow: 1px 1px 0px 0px var(--fg);
             z-index: 3;
         }
-
         .login-card-logo {
             display: block;
             width: 60px;
@@ -1031,7 +1030,7 @@
         #success-container .loading-content { margin-top: 20px; }
 
         /* ══════════════════════════════════════════════
-           APP IFRAME - CRITICAL MOBILE FIX
+           APP IFRAME - FIXED FOR iOS/Chrome/Safari
            ══════════════════════════════════════════════ */
         .app-frame {
             position: fixed;
@@ -1039,35 +1038,23 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            height: 100dvh; /* dynamic viewport height for mobile */
+            height: 100dvh;
             border: none;
             z-index: 10000;
             background: var(--bg);
-            /* CRITICAL: Enable touch scrolling inside iframe */
-            -webkit-overflow-scrolling: touch;
-            overflow: auto;
-            /* Remove any pointer blocking */
-            touch-action: auto;
-            /* Ensure iframe is interactive */
-            pointer-events: auto;
         }
 
-        /* When iframe is active, prevent body scroll */
+        /* When iframe is active, prevent body scroll - NO position:fixed */
         body.iframe-active {
             overflow: hidden;
-            position: fixed;
-            width: 100%;
             height: 100%;
-            top: 0;
-            left: 0;
+            width: 100%;
         }
 
         /* iOS Safari specific fixes */
         @supports (-webkit-touch-callout: none) {
             .app-frame {
                 height: -webkit-fill-available;
-                min-height: 100vh;
-                min-height: 100dvh;
             }
         }
 
@@ -1283,7 +1270,7 @@
             </h1>
 
             <p class="hero-subtitle">
-                سمارت كلاس منصة تعليمية متكاملة تعمل بالذكاء الاصطناعي، توفر شرح تفاعلي بالصوت والصورة على سبورة ذكية، محادثة مع مدرّسة افتراضية، وامتحانات تجريبية — كل ما تحتاجه لإهادة الثانوية في مكان واحد.
+                سمارت كلاس منصة تعليمية متكاملة تعمل بالذكاء الاصطناعي، توفر شرح تفاعلي بالصوت والصورة على سبورة ذكية، محادثة مع مدرّسة افتراضية، وامتحانات تجريبية – كل ما تحتاجه لإهادة الثانوية في مكان واحد.
             </p>
 
             <div class="hero-actions">
@@ -1327,7 +1314,7 @@
                 <div class="feature-card">
                     <div class="feature-icon">🖥️</div>
                     <h3>السبورة التفاعلية الذكية</h3>
-                    <p>المدرّسة الذكية تشرح على سبورة حقيقية خطوة بخطوة — ترسم أشكال هندسية، تكتب معادلات، تعرض صفحات الكتاب، وتتحدث بصوت عربي طبيعي. تماماً كأنك في الفصل!</p>
+                    <p>المدرّسة الذكية تشرح على سبورة حقيقية خطوة بخطوة – ترسم أشكال هندسية، تكتب معادلات، تعرض صفحات الكتاب، وتتحدث بصوت عربي طبيعي. تماماً كأنك في الفصل!</p>
                     <span class="feature-tag tag-ai">🤖 ذكاء اصطناعي</span>
                     <span class="feature-tag tag-voice">🔊 صوت وصورة</span>
                 </div>
@@ -1343,12 +1330,12 @@
                 <div class="feature-card">
                     <div class="feature-icon">📝</div>
                     <h3>امتحانات تجريبية ذكية</h3>
-                    <p>اختر المادة والباب ومستوى الصعوبة وعدد الأسئلة — النظام يولّد أسئلة اختيار من متعدد مبنية على المنهج وأسئلة السنوات السابقة مع تصحيح فوري.</p>
+                    <p>اختر المادة والباب ومستوى الصعوبة وعدد الأسئلة – النظام يولّد أسئلة اختيار من متعدد مبنية على المنهج وأسئلة السنوات السابقة مع تصحيح فوري.</p>
                     <span class="feature-tag tag-ai">🤖 توليد ذكي</span>
                 </div>
 
                 <div class="feature-card">
-                    <div class="feature-icon">🏪</div>
+                    <div class="feature-icon">🎮</div>
                     <h3>المتجر ونظام الرصيد</h3>
                     <p>مادة التربية الإسلامية مجانية للجميع! باقي المواد تُشترى بكروت شحن خاصة بالمنصة. يوجد كروت تفتح جميع مواد القسم العلمي أو الأدبي دفعة واحدة.</p>
                     <span class="feature-tag tag-free">🎁 مادة مجانية</span>
@@ -1390,7 +1377,7 @@
                     <div class="step-number">4</div>
                     <div class="step-content">
                         <h4>ابدأ التعلم!</h4>
-                        <p>استخدم السبورة الذكية، المحادثة، أو الامتحانات — مدرّستك متاحة 24 ساعة</p>
+                        <p>استخدم السبورة الذكية، المحادثة، أو الامتحانات – مدرّستك متاحة 24 ساعة</p>
                     </div>
                 </div>
             </div>
@@ -1401,7 +1388,7 @@
             <div class="section-header">
                 <div class="section-tag">📚 المواد الدراسية</div>
                 <h2 class="section-title">جميع مواد الثانوية العامة</h2>
-                <p class="section-desc">القسم العلمي والأدبي — المنهج الليبي الكامل</p>
+                <p class="section-desc">القسم العلمي والأدبي – المنهج الليبي الكامل</p>
             </div>
 
             <div class="subjects-tabs">
@@ -1446,7 +1433,7 @@
         <section class="section">
             <div class="cta-section">
                 <h2>🎓 جاهز تبدأ رحلتك؟</h2>
-                <p>انضم لسمارت كلاس الآن وابدأ التعلم مع مدرّستك الذكية — مادة التربية الإسلامية مجانية!</p>
+                <p>انضم لسمارت كلاس الآن وابدأ التعلم مع مدرّستك الذكية – مادة التربية الإسلامية مجانية!</p>
                 <div class="cta-actions">
                     <button class="btn btn-primary btn-lg" onclick="playClick(); showView('signup')">إنشاء حساب مجاني</button>
                     <button class="btn btn-secondary btn-lg" onclick="playClick(); showView('login-username')">عندي حساب</button>
@@ -1456,7 +1443,7 @@
 
         <!-- Footer -->
         <footer class="footer">
-            <p>© 2026 سمارت كلاس — منصة التعليم الذكي بالذكاء الاصطناعي 🇱🇾</p>
+            <p>© 2026 سمارت كلاس – منصة التعليم الذكي بالذكاء الاصطناعي 🇱🇾</p>
             <p style="margin-top:6px;">صُنعت بـ ❤️ لطلاب الثانوية العامة في ليبيا</p>
         </footer>
 
@@ -1469,7 +1456,6 @@
             <img src="logo.png" alt="Smart Class" class="login-card-logo">
             <h2>إنشاء حساب جديد</h2>
             <p class="subtitle">أنشئ حسابك في سمارت كلاس</p>
-
             <div id="signup-error" class="status-msg error" style="display:none;"></div>
 
             <div class="form-group">
@@ -1611,10 +1597,10 @@
         </div>
     </div>
 
-    <!-- VIEW 8: App iframe -->
+    <!-- VIEW 8: App iframe - FIXED sandbox -->
     <iframe id="app-frame" class="app-frame" style="display:none;"
-        allow="microphone; camera; autoplay; clipboard-write"
-        sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads allow-top-navigation-by-user-activation">
+            allow="microphone; camera; autoplay; clipboard-write"
+            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads allow-top-navigation-by-user-activation">
     </iframe>
 
     <!-- SCRIPTS -->
@@ -1624,9 +1610,9 @@
     (function() {
         'use strict';
 
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
         //  SOUND SYSTEM (Web Audio API)
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
 
         var AudioCtx = window.AudioContext || window.webkitAudioContext;
         var _audioCtx = null;
@@ -1725,9 +1711,9 @@
             if (e.target.tagName === 'INPUT') playTick();
         });
 
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
         //  SUBJECTS TABS
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
 
         window.showSubjects = function(type) {
             var sci = document.getElementById('subjects-scientific');
@@ -1748,9 +1734,9 @@
             }
         };
 
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
         //  STATE
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
 
         var _token = null;
 
@@ -1777,17 +1763,19 @@
             'app-frame'
         ];
 
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
         //  VIEW MANAGEMENT
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
 
         function hideAll() {
             for (var i = 0; i < ALL_VIEWS.length; i++) {
                 var el = document.getElementById(ALL_VIEWS[i]);
                 if (el) el.style.display = 'none';
             }
-            // Always remove iframe-active when hiding
+            // Clean up iframe-active state
             document.body.classList.remove('iframe-active');
+            document.documentElement.style.overflow = '';
+            document.documentElement.style.height = '';
         }
 
         window.showView = function(viewName) {
@@ -1839,8 +1827,10 @@
                 case 'app':
                     show('app-frame', 'block');
                     if (soundBtn) soundBtn.style.display = 'none';
-                    // CRITICAL: Lock body scroll so iframe gets all touch events
+                    // Lock scroll WITHOUT position:fixed
                     document.body.classList.add('iframe-active');
+                    document.documentElement.style.overflow = 'hidden';
+                    document.documentElement.style.height = '100%';
                     break;
             }
         };
@@ -1857,9 +1847,9 @@
             }, 150);
         }
 
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
         //  ERROR MANAGEMENT
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
 
         var ALL_ERRORS = [
             'main-error', 'signup-error', 'verify-error',
@@ -1888,9 +1878,9 @@
             showView('loading');
         }
 
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
         //  TOKEN STORAGE
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
 
         function saveToken(token) {
             if (!token) return;
@@ -1955,9 +1945,9 @@
             return newToken;
         }
 
-        // ═══════════════════════════════════════
-        //  AUTO-LOGIN
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
+        //  AUTO-LOGIN - FIXED
+        // ═══════════════════════════════════════════
 
         function doAutoLogin(username, serverUrl, serverNum) {
             console.log('Auto-login:', username, 'on server', serverNum);
@@ -1972,19 +1962,37 @@
             hideAll();
 
             var frame = document.getElementById('app-frame');
-            frame.src = autoUrl;
+            // Set display first, then src
             frame.style.display = 'block';
+            frame.src = autoUrl;
 
-            // Lock body for mobile iframe touch
+            // Lock scroll WITHOUT position:fixed on body
             document.body.classList.add('iframe-active');
+            document.documentElement.style.overflow = 'hidden';
+            document.documentElement.style.height = '100%';
 
             var soundBtn = document.getElementById('sound-toggle');
             if (soundBtn) soundBtn.style.display = 'none';
         }
 
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
+        //  CLEANUP HELPER
+        // ═══════════════════════════════════════════
+
+        function cleanupIframe() {
+            var frame = document.getElementById('app-frame');
+            if (frame) {
+                frame.src = '';
+                frame.style.display = 'none';
+            }
+            document.body.classList.remove('iframe-active');
+            document.documentElement.style.overflow = '';
+            document.documentElement.style.height = '';
+        }
+
+        // ═══════════════════════════════════════════
         //  SIGNUP FLOW
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
 
         window.goToVerification = function() {
             hideAllErrors();
@@ -2155,9 +2163,9 @@
             }
         };
 
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
         //  LOGIN FLOW
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
 
         window.submitUsername = async function() {
             hideAllErrors();
@@ -2318,9 +2326,9 @@
             }
         };
 
-        // ═══════════════════════════════════════
-        //  IFRAME MESSAGE LISTENER
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
+        //  IFRAME MESSAGE LISTENER - FIXED CLEANUP
+        // ═══════════════════════════════════════════
 
         window.addEventListener('message', function(event) {
             var origin = event.origin || '';
@@ -2333,9 +2341,7 @@
             console.log('Message from server:', data.type);
 
             if (data.type === 'force_logout') {
-                document.getElementById('app-frame').src = '';
-                document.getElementById('app-frame').style.display = 'none';
-                document.body.classList.remove('iframe-active');
+                cleanupIframe();
                 clearTokens();
                 clearUserInfo();
                 showView('login-username');
@@ -2343,9 +2349,7 @@
             }
 
             if (data.type === 'logout') {
-                document.getElementById('app-frame').src = '';
-                document.getElementById('app-frame').style.display = 'none';
-                document.body.classList.remove('iframe-active');
+                cleanupIframe();
                 clearTokens();
                 clearUserInfo();
                 showView('main');
@@ -2353,9 +2357,7 @@
 
             if (data.type === 'auto_login_failed') {
                 console.log('Auto-login failed:', data.reason);
-                document.getElementById('app-frame').src = '';
-                document.getElementById('app-frame').style.display = 'none';
-                document.body.classList.remove('iframe-active');
+                cleanupIframe();
                 clearTokens();
                 clearUserInfo();
                 showView('main');
@@ -2363,16 +2365,14 @@
 
             if (data.type === 'session_expired') {
                 console.log('Session expired, re-trying auto-login...');
-                document.getElementById('app-frame').src = '';
-                document.getElementById('app-frame').style.display = 'none';
-                document.body.classList.remove('iframe-active');
+                cleanupIframe();
                 init();
             }
         });
 
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
         //  INIT - Auto-login check on page load
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
 
         async function init() {
             showLoading('جاري التحقق...');
@@ -2426,9 +2426,9 @@
             showView('main');
         }
 
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
         //  START
-        // ═══════════════════════════════════════
+        // ═══════════════════════════════════════════
 
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);
