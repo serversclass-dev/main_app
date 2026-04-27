@@ -1592,12 +1592,6 @@
         </div>
     </div>
 
-    <!-- VIEW 8: App iframe - FIXED sandbox -->
-    <iframe id="app-frame" class="app-frame" style="display:none;"
-            allow="microphone; camera; autoplay; clipboard-write"
-            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads allow-top-navigation-by-user-activation">
-    </iframe>
-
     <!-- SCRIPTS -->
     <script src="js/fingerprint.js"></script>
     <script src="js/api.js"></script>
@@ -1754,8 +1748,7 @@
             'verify-container',
             'login-username-container',
             'login-password-container',
-            'success-container',
-            'app-frame'
+            'success-container'
         ];
 
         // ═══════════════════════════════════════════
@@ -1767,11 +1760,6 @@
                 var el = document.getElementById(ALL_VIEWS[i]);
                 if (el) el.style.display = 'none';
             }
-            document.body.classList.remove('iframe-active');
-            document.documentElement.style.overflow = '';
-            document.documentElement.style.height = '';
-            document.documentElement.style.width = '';
-            document.documentElement.style.position = '';
         }
 
         window.showView = function(viewName) {
@@ -1820,19 +1808,7 @@
                     if (soundBtn) soundBtn.style.display = 'flex';
                     playSuccess();
                     break;
-                case 'app':
-                    show('app-frame', 'block');
-                    if (soundBtn) soundBtn.style.display = 'none';
-                    document.body.classList.add('iframe-active');
-                    // iOS Safari: scroll to top first to reset viewport
-                    window.scrollTo(0, 0);
-                    // Prevent html scroll
-                    document.documentElement.style.overflow = 'hidden';
-                    document.documentElement.style.overflow = 'clip';
-                    document.documentElement.style.height = '100%';
-                    document.documentElement.style.width = '100%';
-                    document.documentElement.style.position = 'fixed';
-                    break;
+                
             }
         };
 
@@ -1920,36 +1896,6 @@
             } catch(e) {}
         }
 
-        function loadUserInfo() {
-            try {
-                var u = localStorage.getItem('sc_username');
-                var s = localStorage.getItem('sc_server_url');
-                var n = localStorage.getItem('sc_server_num');
-                if (u && s) return { username: u, serverUrl: s, serverNum: n };
-            } catch(e) {}
-            return null;
-        }
-
-        function clearUserInfo() {
-            try {
-                localStorage.removeItem('sc_username');
-                localStorage.removeItem('sc_server_url');
-                localStorage.removeItem('sc_server_num');
-            } catch(e) {}
-        }
-
-        function getToken() {
-            var stored = loadToken();
-            if (stored && stored.trim()) return stored.trim();
-            var newToken = DeviceFingerprint.getToken();
-            saveToken(newToken);
-            return newToken;
-        }
-
-        // ═══════════════════════════════════════════
-        //  AUTO-LOGIN - FIXED
-        // ═══════════════════════════════════════════
-
         function doAutoLogin(username, serverUrl, serverNum) {
             console.log('Auto-login:', username, 'on server', serverNum);
 
@@ -1960,24 +1906,8 @@
                 encodeURIComponent(_token) +
                 '&username=' + encodeURIComponent(username);
 
-            hideAll();
-
-            // iOS Safari: scroll to top before showing iframe
-            window.scrollTo(0, 0);
-
-            var frame = document.getElementById('app-frame');
-            frame.style.display = 'block';
-            frame.src = autoUrl;
-
-            document.body.classList.add('iframe-active');
-            document.documentElement.style.overflow = 'hidden';
-            document.documentElement.style.overflow = 'clip';
-            document.documentElement.style.height = '100%';
-            document.documentElement.style.width = '100%';
-            document.documentElement.style.position = 'fixed';
-
-            var soundBtn = document.getElementById('sound-toggle');
-            if (soundBtn) soundBtn.style.display = 'none';
+            // Direct redirect in same tab
+            window.location.href = autoUrl;
         }
 
         // ═══════════════════════════════════════════
@@ -1985,16 +1915,9 @@
         // ═══════════════════════════════════════════
 
         function cleanupIframe() {
-            var frame = document.getElementById('app-frame');
-            if (frame) {
-                frame.src = '';
-                frame.style.display = 'none';
-            }
             document.body.classList.remove('iframe-active');
             document.documentElement.style.overflow = '';
             document.documentElement.style.height = '';
-            document.documentElement.style.width = '';
-            document.documentElement.style.position = '';
         }
 
         // ═══════════════════════════════════════════
@@ -2337,45 +2260,7 @@
         //  IFRAME MESSAGE LISTENER - FIXED CLEANUP
         // ═══════════════════════════════════════════
 
-        window.addEventListener('message', function(event) {
-            var origin = event.origin || '';
-            var isValid = origin.includes('serverclass') && origin.includes('hf.space');
-            if (!isValid) return;
-
-            var data = event.data;
-            if (!data || typeof data !== 'object') return;
-
-            console.log('Message from server:', data.type);
-
-            if (data.type === 'force_logout') {
-                cleanupIframe();
-                clearTokens();
-                clearUserInfo();
-                showView('login-username');
-                showError('login-username-error', data.message || 'تم تسجيل الدخول من جهاز آخر');
-            }
-
-            if (data.type === 'logout') {
-                cleanupIframe();
-                clearTokens();
-                clearUserInfo();
-                showView('main');
-            }
-
-            if (data.type === 'auto_login_failed') {
-                console.log('Auto-login failed:', data.reason);
-                cleanupIframe();
-                clearTokens();
-                clearUserInfo();
-                showView('main');
-            }
-
-            if (data.type === 'session_expired') {
-                console.log('Session expired, re-trying auto-login...');
-                cleanupIframe();
-                init();
-            }
-        });
+        // No iframe message listener needed - using direct redirect
 
         // ═══════════════════════════════════════════
         //  INIT - Auto-login check on page load
