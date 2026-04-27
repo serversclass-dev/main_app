@@ -1036,9 +1036,8 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
+            width: 100%;
+            height: 100%;
             border: none;
             z-index: 10000;
             background: var(--bg);
@@ -1047,17 +1046,13 @@
         /* When iframe is active, prevent body scroll - NO position:fixed */
         body.iframe-active {
             overflow: hidden;
+            overflow: clip;
             height: 100%;
             width: 100%;
+            position: relative;
         }
 
-        /* iOS Safari specific fixes */
-        @supports (-webkit-touch-callout: none) {
-            .app-frame {
-                height: -webkit-fill-available;
-            }
-        }
-
+        
         /* ══════════════════════════════════════════════
            DISPLAY USERNAME TAG
            ══════════════════════════════════════════════ */
@@ -1772,10 +1767,11 @@
                 var el = document.getElementById(ALL_VIEWS[i]);
                 if (el) el.style.display = 'none';
             }
-            // Clean up iframe-active state
             document.body.classList.remove('iframe-active');
             document.documentElement.style.overflow = '';
             document.documentElement.style.height = '';
+            document.documentElement.style.width = '';
+            document.documentElement.style.position = '';
         }
 
         window.showView = function(viewName) {
@@ -1827,10 +1823,15 @@
                 case 'app':
                     show('app-frame', 'block');
                     if (soundBtn) soundBtn.style.display = 'none';
-                    // Lock scroll WITHOUT position:fixed
                     document.body.classList.add('iframe-active');
+                    // iOS Safari: scroll to top first to reset viewport
+                    window.scrollTo(0, 0);
+                    // Prevent html scroll
                     document.documentElement.style.overflow = 'hidden';
+                    document.documentElement.style.overflow = 'clip';
                     document.documentElement.style.height = '100%';
+                    document.documentElement.style.width = '100%';
+                    document.documentElement.style.position = 'fixed';
                     break;
             }
         };
@@ -1961,15 +1962,19 @@
 
             hideAll();
 
+            // iOS Safari: scroll to top before showing iframe
+            window.scrollTo(0, 0);
+
             var frame = document.getElementById('app-frame');
-            // Set display first, then src
             frame.style.display = 'block';
             frame.src = autoUrl;
 
-            // Lock scroll WITHOUT position:fixed on body
             document.body.classList.add('iframe-active');
             document.documentElement.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'clip';
             document.documentElement.style.height = '100%';
+            document.documentElement.style.width = '100%';
+            document.documentElement.style.position = 'fixed';
 
             var soundBtn = document.getElementById('sound-toggle');
             if (soundBtn) soundBtn.style.display = 'none';
@@ -1988,6 +1993,8 @@
             document.body.classList.remove('iframe-active');
             document.documentElement.style.overflow = '';
             document.documentElement.style.height = '';
+            document.documentElement.style.width = '';
+            document.documentElement.style.position = '';
         }
 
         // ═══════════════════════════════════════════
