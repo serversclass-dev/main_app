@@ -1906,18 +1906,45 @@
             }
 
             function getToken() {
+                // Try stored token first
                 var stored = loadToken();
                 if (stored && stored.trim()) return stored.trim();
-                var newToken = DeviceFingerprint.getToken();
+
+                // Try fingerprint
+                var newToken = null;
+                try {
+                    if (typeof DeviceFingerprint !== 'undefined' && DeviceFingerprint.getToken) {
+                        newToken = DeviceFingerprint.getToken();
+                    }
+                } catch(e) {
+                    console.error('Fingerprint error:', e);
+                }
+
+                // Fallback: generate a random token if fingerprint fails
+                if (!newToken || !newToken.trim()) {
+                    newToken = 'ft_' + Date.now() + '_' + Math.random().toString(36).substring(2, 15) +
+                            '_' + Math.random().toString(36).substring(2, 15);
+                    console.warn('Fingerprint failed, using random token:', newToken);
+                }
+
                 saveToken(newToken);
                 return newToken;
             }
 
-            // ═══════════════════════════════════════════
-            //  AUTO-LOGIN (DIRECT REDIRECT)
-            // ═══════════════════════════════════════════
+            // In doAutoLogin - add null guard:
             function doAutoLogin(username, serverUrl, serverNum) {
-                console.log('Auto-login redirect:', username, 'on server', serverNum);
+                if (!_token || _token === 'null' || _token === 'undefined') {
+                    _token = getToken(); // Re-generate if somehow null
+                }
+
+                if (!_token) {
+                    console.error('CRITICAL: Cannot auto-login without token');
+                    showView('login-username');
+                    showError('login-username-error', 'خطأ في المصادقة. حاول مرة أخرى.');
+                    return;
+                }
+
+                console.log('Auto-login redirect:', username, 'on server', serverNum, 'token:', _token.substring(0, 10) + '...');
 
                 saveToken(_token);
                 saveUserInfo(username, serverUrl, serverNum);
@@ -1928,7 +1955,6 @@
 
                 window.location.href = autoUrl;
             }
-
             // ═══════════════════════════════════════════
             //  SIGNUP FLOW
             // ═══════════════════════════════════════════
