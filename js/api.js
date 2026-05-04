@@ -5,7 +5,7 @@
 
 const API = (function() {
     const BASE_URL = 'https://dooratre-db.hf.space';
-    const API_KEY = 'maindb_api_secret_2024';
+    const API_KEY = 'Dbpassword2000$';
 
     /**
      * Make an API request to Main DB.
