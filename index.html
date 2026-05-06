@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Smart Class - منصة التعليم الذكي</title>
+
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="shortcut icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -21,6 +27,15 @@
             --purple: #7c4dff;
             --orange: #ff9800;
             --telegram: #0088cc;
+            --telegram-dark: #006699;
+            --telegram-light: #e3f2fd;
+
+            /* Password strength colors */
+            --pw-weak: #e53935;
+            --pw-fair: #fb8c00;
+            --pw-good: #fdd835;
+            --pw-strong: #43a047;
+            --pw-excellent: #2e7d32;
 
             --font-heading: 'Kalam', 'Tajawal', cursive;
             --font-body: 'Patrick Hand', 'Tajawal', cursive;
@@ -392,9 +407,7 @@
             margin: 0 auto;
         }
 
-        /* ═══════════════════════════════════════════
-           SUPER AMAZING SCROLL ANIMATIONS
-        ═══════════════════════════════════════════ */
+        /* ═══ SCROLL REVEAL ═══ */
         .scroll-reveal {
             opacity: 0;
             transform: translateY(60px) scale(0.92) rotate(-2deg);
@@ -441,20 +454,17 @@
             transform: perspective(1000px) rotateX(0deg) translateY(0);
         }
 
-        /* Stagger delays */
         .scroll-reveal[data-delay="1"] { transition-delay: 0.1s; }
         .scroll-reveal[data-delay="2"] { transition-delay: 0.2s; }
         .scroll-reveal[data-delay="3"] { transition-delay: 0.3s; }
         .scroll-reveal[data-delay="4"] { transition-delay: 0.4s; }
         .scroll-reveal[data-delay="5"] { transition-delay: 0.5s; }
 
-        /* Parallax floating */
         .parallax-float {
             transition: transform 0.1s linear;
             will-change: transform;
         }
 
-        /* Card 3D tilt on scroll */
         .feature-card {
             background: var(--card-bg);
             border: 2.5px solid var(--border);
@@ -812,6 +822,7 @@
             text-decoration: none;
             outline: none;
             -webkit-tap-highlight-color: transparent;
+            gap: 8px;
         }
 
         .btn:focus-visible {
@@ -863,7 +874,7 @@
         }
 
         .btn-telegram:hover {
-            background-color: #006699;
+            background-color: var(--telegram-dark);
             color: #ffffff;
             box-shadow: var(--shadow-hard-sm);
             transform: translate(2px, 2px);
@@ -872,6 +883,12 @@
         .btn-telegram:active {
             box-shadow: none;
             transform: translate(4px, 4px);
+        }
+
+        .btn-telegram img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
         }
 
         .btn-lg {
@@ -1064,6 +1081,36 @@
             box-shadow: 0 0 0 3px rgba(45, 93, 161, 0.15);
         }
 
+        /* English-only input visual hint */
+        .form-group input[type="text"].english-only {
+            direction: ltr;
+            text-align: left;
+            font-family: 'Patrick Hand', monospace;
+            letter-spacing: 1px;
+        }
+
+        .input-hint {
+            display: block;
+            font-family: var(--font-arabic);
+            font-size: 0.78rem;
+            color: var(--fg);
+            opacity: 0.55;
+            margin-top: 6px;
+            padding-right: 4px;
+        }
+
+        .input-hint.error {
+            color: var(--accent);
+            opacity: 1;
+            font-weight: 700;
+        }
+
+        .input-hint.success {
+            color: var(--green);
+            opacity: 1;
+            font-weight: 700;
+        }
+
         .radio-group {
             display: flex;
             gap: 12px;
@@ -1155,42 +1202,187 @@
 
         .forgot-link:hover { color: var(--accent); }
 
-        /* ═══ TELEGRAM BOT INFO BOX ═══ */
+        /* ═══════════════════════════════════════════
+           PASSWORD STRENGTH METER (PRO)
+           ═══════════════════════════════════════════ */
+        .password-strength {
+            margin-top: 10px;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.3s ease, max-height 0.4s ease;
+        }
+
+        .password-strength.visible {
+            opacity: 1;
+            max-height: 280px;
+        }
+
+        .strength-bar-wrapper {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+
+        .strength-segment {
+            flex: 1;
+            height: 6px;
+            background: var(--muted);
+            border-radius: 3px;
+            transition: background 0.3s ease;
+            border: 1.5px solid var(--border);
+        }
+
+        .strength-segment.active-weak { background: var(--pw-weak); }
+        .strength-segment.active-fair { background: var(--pw-fair); }
+        .strength-segment.active-good { background: var(--pw-good); }
+        .strength-segment.active-strong { background: var(--pw-strong); }
+        .strength-segment.active-excellent { background: var(--pw-excellent); }
+
+        .strength-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-family: var(--font-arabic);
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .strength-label-text {
+            color: var(--fg);
+        }
+
+        .strength-label-value {
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            border: 1.5px solid;
+        }
+
+        .strength-label-value.weak { background: #ffebee; color: var(--pw-weak); border-color: var(--pw-weak); }
+        .strength-label-value.fair { background: #fff3e0; color: var(--pw-fair); border-color: var(--pw-fair); }
+        .strength-label-value.good { background: #fffde7; color: #f57f17; border-color: var(--pw-good); }
+        .strength-label-value.strong { background: #e8f5e9; color: var(--pw-strong); border-color: var(--pw-strong); }
+        .strength-label-value.excellent { background: #c8e6c9; color: var(--pw-excellent); border-color: var(--pw-excellent); }
+
+        .strength-rules {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 10px;
+            background: var(--bg);
+            border: 2px dashed var(--muted);
+            border-radius: var(--radius-wobbly-sm);
+            padding: 10px 12px;
+        }
+
+        .strength-rule {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-arabic);
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--fg);
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        .strength-rule.met {
+            opacity: 1;
+            color: var(--pw-strong);
+        }
+
+        .strength-rule-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1.5px solid currentColor;
+            font-size: 0.7rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .strength-rule.met .strength-rule-icon {
+            background: var(--pw-strong);
+            color: #fff;
+            border-color: var(--pw-strong);
+        }
+
+        @media (max-width: 380px) {
+            .strength-rules {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ═══════════════════════════════════════════
+           TELEGRAM BOT INFO BOX (REDESIGNED)
+           ═══════════════════════════════════════════ */
         .bot-info-box {
             background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
             border: 2.5px solid var(--telegram);
             border-radius: var(--radius-wobbly-sm);
-            padding: 16px 18px;
+            padding: 20px 18px 16px;
             margin-bottom: 18px;
-            box-shadow: 3px 3px 0px 0px var(--telegram);
+            box-shadow: 4px 4px 0px 0px var(--telegram);
             position: relative;
             transform: rotate(-0.3deg);
         }
 
-        .bot-info-box::before {
-            content: '✈️';
-            position: absolute;
-            top: -12px;
-            right: 16px;
-            background: var(--telegram);
-            color: #fff;
-            width: 32px;
-            height: 32px;
+        .bot-info-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 2px dashed rgba(0, 136, 204, 0.3);
+        }
+
+        .bot-info-icon-wrap {
+            width: 48px;
+            height: 48px;
+            background: #fff;
+            border: 2.5px solid var(--telegram);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
-            border: 2px solid var(--border);
-            box-shadow: 1px 1px 0px 0px var(--fg);
+            box-shadow: 2px 2px 0px 0px var(--telegram);
+            flex-shrink: 0;
+            padding: 6px;
         }
 
-        .bot-info-box h4 {
+        .bot-info-icon-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .bot-info-titles {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .bot-info-title {
             font-family: var(--font-arabic);
             font-size: 1rem;
             font-weight: 800;
             color: #01579b;
-            margin-bottom: 8px;
+            margin: 0 0 2px 0;
+            line-height: 1.3;
+        }
+
+        .bot-info-subtitle {
+            font-family: var(--font-arabic);
+            font-size: 0.78rem;
+            color: #0277bd;
+            opacity: 0.85;
+            margin: 0;
+            line-height: 1.4;
         }
 
         .bot-info-box ol {
@@ -1206,9 +1398,13 @@
             font-size: 0.88rem;
             color: var(--fg);
             line-height: 1.7;
-            padding-right: 28px;
+            padding-right: 30px;
             position: relative;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+        }
+
+        .bot-info-box ol li:last-child {
+            margin-bottom: 0;
         }
 
         .bot-info-box ol li::before {
@@ -1216,41 +1412,31 @@
             position: absolute;
             right: 0;
             top: 2px;
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             background: var(--telegram);
             color: #fff;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.75rem;
+            font-size: 0.78rem;
             font-weight: 800;
+            box-shadow: 1px 1px 0px 0px var(--fg);
         }
 
-        .bot-link {
-            display: inline-block;
-            background: var(--card-bg);
+        .bot-info-box ol li strong {
             color: var(--telegram);
-            font-weight: 800;
-            padding: 2px 10px;
-            border-radius: 12px;
+            background: #fff;
+            padding: 1px 8px;
+            border-radius: 6px;
             border: 1.5px solid var(--telegram);
-            text-decoration: none;
-            font-family: monospace;
-            font-size: 0.9rem;
-            margin: 0 2px;
-            transition: all 0.2s ease;
-        }
-
-        .bot-link:hover {
-            background: var(--telegram);
-            color: #fff;
-            transform: scale(1.05);
+            font-size: 0.85rem;
+            font-weight: 800;
         }
 
         .bot-open-btn {
-            margin-top: 10px;
+            margin-top: 14px;
             width: 100%;
         }
 
@@ -1427,7 +1613,6 @@
             .login-card::after { right: 24px; width: 14px; height: 14px; }
             .login-card-logo { width: 48px; height: 48px; }
 
-
             .btn-lg { padding: 12px 22px; font-size: 0.95rem; }
 
             .form-group input[type="text"],
@@ -1442,8 +1627,14 @@
             .hero-doodle-1, .hero-doodle-2 { display: none; }
             .sound-toggle { bottom: 12px; left: 12px; width: 38px; height: 38px; font-size: 1rem; }
 
-            .bot-info-box { padding: 14px 14px; }
+            .bot-info-box { padding: 16px 14px 14px; }
+            .bot-info-icon-wrap { width: 42px; height: 42px; }
+            .bot-info-title { font-size: 0.95rem; }
+            .bot-info-subtitle { font-size: 0.72rem; }
             .bot-info-box ol li { font-size: 0.82rem; }
+
+            .strength-label { font-size: 0.8rem; }
+            .strength-rule { font-size: 0.74rem; }
         }
 
         @media (min-width: 481px) and (max-width: 768px) {
@@ -1702,7 +1893,7 @@
 
     <!-- ═══════════════════════════════════════════
          VIEW: SIGNUP STEP 1 (Username only)
-    ═══════════════════════════════════════════ -->
+         ═══════════════════════════════════════════ -->
     <div id="signup-step1-container" class="login-container" style="display:none;">
         <div class="login-card">
             <img src="logo.png" alt="Smart Class" class="login-card-logo">
@@ -1722,7 +1913,14 @@
 
             <div class="form-group">
                 <label for="signup-username">اسم المستخدم</label>
-                <input type="text" id="signup-username" placeholder="3 أحرف على الأقل" autocomplete="username">
+                <input type="text" id="signup-username" class="english-only"
+                    placeholder="example123"
+                    autocomplete="username"
+                    maxlength="20"
+                    autocapitalize="off"
+                    autocorrect="off"
+                    spellcheck="false">
+                <span class="input-hint" id="username-hint">يجب أن يكون بالإنجليزية فقط، 4 أحرف على الأقل (a-z, 0-9, _)</span>
             </div>
 
             <div class="form-actions">
@@ -1738,8 +1936,8 @@
     </div>
 
     <!-- ═══════════════════════════════════════════
-         VIEW: SIGNUP STEP 2 (Password + Type)
-    ═══════════════════════════════════════════ -->
+         VIEW: SIGNUP STEP 2 (Password + Type) - WITH STRENGTH METER
+         ═══════════════════════════════════════════ -->
     <div id="signup-step2-container" class="login-container" style="display:none;">
         <div class="login-card">
             <img src="logo.png" alt="Smart Class" class="login-card-logo">
@@ -1759,12 +1957,58 @@
 
             <div class="form-group">
                 <label for="signup-password">كلمة المرور</label>
-                <input type="password" id="signup-password" placeholder="6 أحرف على الأقل">
+                <input type="password" id="signup-password"
+                    placeholder="أدخل كلمة مرور قوية"
+                    autocomplete="new-password">
+
+                <!-- Password Strength Meter -->
+                <div class="password-strength" id="password-strength">
+                    <div class="strength-bar-wrapper">
+                        <div class="strength-segment" data-segment="1"></div>
+                        <div class="strength-segment" data-segment="2"></div>
+                        <div class="strength-segment" data-segment="3"></div>
+                        <div class="strength-segment" data-segment="4"></div>
+                        <div class="strength-segment" data-segment="5"></div>
+                    </div>
+                    <div class="strength-label">
+                        <span class="strength-label-text">قوة كلمة المرور:</span>
+                        <span class="strength-label-value" id="strength-value">ضعيفة</span>
+                    </div>
+                    <div class="strength-rules">
+                        <div class="strength-rule" data-rule="length">
+                            <span class="strength-rule-icon">✓</span>
+                            <span>8 أحرف على الأقل</span>
+                        </div>
+                        <div class="strength-rule" data-rule="uppercase">
+                            <span class="strength-rule-icon">✓</span>
+                            <span>حرف كبير (A-Z)</span>
+                        </div>
+                        <div class="strength-rule" data-rule="lowercase">
+                            <span class="strength-rule-icon">✓</span>
+                            <span>حرف صغير (a-z)</span>
+                        </div>
+                        <div class="strength-rule" data-rule="number">
+                            <span class="strength-rule-icon">✓</span>
+                            <span>رقم (0-9)</span>
+                        </div>
+                        <div class="strength-rule" data-rule="special">
+                            <span class="strength-rule-icon">✓</span>
+                            <span>رمز خاص (!@#$%)</span>
+                        </div>
+                        <div class="strength-rule" data-rule="nospaces">
+                            <span class="strength-rule-icon">✓</span>
+                            <span>بدون مسافات</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="signup-confirm">تأكيد كلمة المرور</label>
-                <input type="password" id="signup-confirm" placeholder="أعد كتابة كلمة المرور">
+                <input type="password" id="signup-confirm"
+                    placeholder="أعد كتابة كلمة المرور"
+                    autocomplete="new-password">
+                <span class="input-hint" id="confirm-hint" style="display:none;"></span>
             </div>
 
             <div class="form-group">
@@ -1793,8 +2037,8 @@
     </div>
 
     <!-- ═══════════════════════════════════════════
-         VIEW: SIGNUP STEP 3 (Telegram Verification)
-    ═══════════════════════════════════════════ -->
+         VIEW: SIGNUP STEP 3 (Telegram Verification) - REDESIGNED
+         ═══════════════════════════════════════════ -->
     <div id="verify-container" class="login-container" style="display:none;">
         <div class="login-card">
             <img src="logo.png" alt="Smart Class" class="login-card-logo">
@@ -1811,15 +2055,24 @@
             <p class="subtitle">الخطوة الأخيرة: تحقق من حسابك</p>
 
             <div class="bot-info-box">
-                <h4>كيف تحصل على رمز التحقق؟</h4>
+                <div class="bot-info-header">
+                    <div class="bot-info-icon-wrap">
+                        <img src="tele.png" alt="Telegram">
+                    </div>
+                    <div class="bot-info-titles">
+                        <h4 class="bot-info-title">بوت التحقق الرسمي</h4>
+                        <p class="bot-info-subtitle">احصل على رمز التحقق عبر تيليجرام</p>
+                    </div>
+                </div>
                 <ol>
-                    <li>افتح بوت <a href="https://t.me/classvrf_bot" target="_blank" class="bot-link">@classvrf_bot</a></li>
-                    <li>اضغط على زر <strong>Start</strong> أو أرسل كلمة <strong>start</strong></li>
+                    <li>اضغط على زر <strong>فتح البوت</strong> أدناه</li>
+                    <li>اضغط على زر <strong>Start</strong> داخل البوت</li>
                     <li>انسخ الرمز الذي يرسله لك البوت</li>
-                    <li>الصقه في الحقل أدناه</li>
+                    <li>الصقه في الحقل أدناه واضغط إنشاء الحساب</li>
                 </ol>
-                <a href="https://t.me/classvrf_bot" target="_blank" class="btn btn-telegram bot-open-btn" onclick="playClick()">
-                    📲 فتح البوت
+                <a href="https://t.me/smartclassaibot" target="_blank" rel="noopener" class="btn btn-telegram bot-open-btn" onclick="playClick()">
+                    <img src="tele.png" alt="Telegram">
+                    <span>فتح البوت الآن</span>
                 </a>
             </div>
 
@@ -1829,6 +2082,9 @@
                 <label for="verify-code">رمز التحقق</label>
                 <input type="text" id="verify-code" placeholder="أدخل الرمز من البوت"
                     autocomplete="one-time-code"
+                    autocapitalize="off"
+                    autocorrect="off"
+                    spellcheck="false"
                     onkeypress="if(event.key==='Enter') submitSignup()">
             </div>
 
@@ -1845,7 +2101,7 @@
 
     <!-- ═══════════════════════════════════════════
          VIEW: LOGIN - Username
-    ═══════════════════════════════════════════ -->
+         ═══════════════════════════════════════════ -->
     <div id="login-username-container" class="login-container" style="display:none;">
         <div class="login-card">
             <img src="logo.png" alt="Smart Class" class="login-card-logo">
@@ -1856,8 +2112,12 @@
 
             <div class="form-group">
                 <label for="login-username">اسم المستخدم</label>
-                <input type="text" id="login-username" placeholder="أدخل اسم المستخدم"
+                <input type="text" id="login-username" class="english-only"
+                    placeholder="أدخل اسم المستخدم"
                     autocomplete="username"
+                    autocapitalize="off"
+                    autocorrect="off"
+                    spellcheck="false"
                     onkeypress="if(event.key==='Enter') submitUsername()">
             </div>
 
@@ -1875,7 +2135,7 @@
 
     <!-- ═══════════════════════════════════════════
          VIEW: LOGIN - Password
-    ═══════════════════════════════════════════ -->
+         ═══════════════════════════════════════════ -->
     <div id="login-password-container" class="login-container" style="display:none;">
         <div class="login-card">
             <img src="logo.png" alt="Smart Class" class="login-card-logo">
@@ -1911,8 +2171,8 @@
     </div>
 
     <!-- ═══════════════════════════════════════════
-         VIEW: FORGOT PASSWORD
-    ═══════════════════════════════════════════ -->
+         VIEW: FORGOT PASSWORD - REDESIGNED
+         ═══════════════════════════════════════════ -->
     <div id="forgot-password-container" class="login-container" style="display:none;">
         <div class="login-card">
             <img src="logo.png" alt="Smart Class" class="login-card-logo">
@@ -1920,15 +2180,24 @@
             <p class="subtitle">استرجع حسابك عبر بوت تيليجرام</p>
 
             <div class="bot-info-box">
-                <h4>كيف تستعيد كلمة المرور؟</h4>
+                <div class="bot-info-header">
+                    <div class="bot-info-icon-wrap">
+                        <img src="tele.png" alt="Telegram">
+                    </div>
+                    <div class="bot-info-titles">
+                        <h4 class="bot-info-title">بوت استعادة الحساب</h4>
+                        <p class="bot-info-subtitle">سيساعدك في استعادة كلمة مرورك</p>
+                    </div>
+                </div>
                 <ol>
-                    <li>افتح بوت <a href="https://t.me/smartpasswordbot" target="_blank" class="bot-link">@smartpasswordbot</a></li>
-                    <li>اضغط على زر <strong>Start</strong> أو أرسل كلمة <strong>start</strong></li>
+                    <li>اضغط على زر <strong>فتح البوت</strong> أدناه</li>
+                    <li>اضغط على زر <strong>Start</strong> داخل البوت</li>
                     <li>اتبع التعليمات التي يرسلها لك البوت</li>
                     <li>سيقوم البوت بمساعدتك في إعادة تعيين كلمة مرورك</li>
                 </ol>
-                <a href="https://t.me/smartpasswordbot" target="_blank" class="btn btn-telegram bot-open-btn" onclick="playClick()">
-                    📲 فتح البوت الآن
+                <a href="https://t.me/smartpasswordbot" target="_blank" rel="noopener" class="btn btn-telegram bot-open-btn" onclick="playClick()">
+                    <img src="tele.png" alt="Telegram">
+                    <span>فتح البوت الآن</span>
                 </a>
             </div>
 
@@ -1946,7 +2215,7 @@
 
     <!-- ═══════════════════════════════════════════
          VIEW: SUCCESS
-    ═══════════════════════════════════════════ -->
+         ═══════════════════════════════════════════ -->
     <div id="success-container" class="login-container" style="display:none;">
         <div class="login-card">
             <img src="logo.png" alt="Smart Class" class="login-card-logo">
@@ -1965,7 +2234,21 @@
     (function() {
         'use strict';
 
-        // ═══ SOUND SYSTEM ═══
+        // ═══════════════════════════════════════════
+        //  GLOBAL CONFIG
+        // ═══════════════════════════════════════════
+        var CONFIG = {
+            VERIFY_BOT: 'smartclassaibot',
+            FORGOT_BOT: 'smartpasswordbot',
+            USERNAME_MIN_LENGTH: 4,
+            USERNAME_MAX_LENGTH: 20,
+            USERNAME_PATTERN: /^[a-zA-Z0-9_]+$/,
+            PASSWORD_MIN_LENGTH: 8
+        };
+
+        // ═══════════════════════════════════════════
+        //  SOUND SYSTEM
+        // ═══════════════════════════════════════════
         var AudioCtx = window.AudioContext || window.webkitAudioContext;
         var _audioCtx = null;
         var _soundEnabled = true;
@@ -2064,12 +2347,240 @@
         });
 
         // ═══════════════════════════════════════════
-        //  SCROLL REVEAL ANIMATIONS (Super Amazing)
+        //  USERNAME VALIDATION (English-only)
+        // ═══════════════════════════════════════════
+        function validateUsername(username) {
+            if (!username || username.length === 0) {
+                return { valid: false, reason: 'يرجى إدخال اسم المستخدم' };
+            }
+            if (username.length < CONFIG.USERNAME_MIN_LENGTH) {
+                return { valid: false, reason: 'اسم المستخدم قصير جداً (' + CONFIG.USERNAME_MIN_LENGTH + ' أحرف على الأقل)' };
+            }
+            if (username.length > CONFIG.USERNAME_MAX_LENGTH) {
+                return { valid: false, reason: 'اسم المستخدم طويل جداً (' + CONFIG.USERNAME_MAX_LENGTH + ' أحرف كحد أقصى)' };
+            }
+            if (!CONFIG.USERNAME_PATTERN.test(username)) {
+                return { valid: false, reason: 'يجب أن يحتوي على أحرف إنجليزية وأرقام و _ فقط' };
+            }
+            if (/^[0-9_]+$/.test(username)) {
+                return { valid: false, reason: 'يجب أن يبدأ بحرف إنجليزي على الأقل' };
+            }
+            return { valid: true };
+        }
+
+        // Live validation for username inputs
+        function setupUsernameInput(inputId, hintId) {
+            var input = document.getElementById(inputId);
+            var hint = hintId ? document.getElementById(hintId) : null;
+            if (!input) return;
+
+            input.addEventListener('input', function(e) {
+                // Strip any non-allowed characters in real-time
+                var cleaned = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
+                if (cleaned !== e.target.value) {
+                    e.target.value = cleaned;
+                }
+
+                if (!hint) return;
+
+                var val = cleaned.trim();
+                if (val.length === 0) {
+                    hint.className = 'input-hint';
+                    hint.textContent = 'يجب أن يكون بالإنجليزية فقط، 4 أحرف على الأقل (a-z, 0-9, _)';
+                    return;
+                }
+
+                var result = validateUsername(val);
+                if (result.valid) {
+                    hint.className = 'input-hint success';
+                    hint.textContent = '✓ اسم المستخدم صالح';
+                } else {
+                    hint.className = 'input-hint error';
+                    hint.textContent = '✗ ' + result.reason;
+                }
+            });
+        }
+
+        // ═══════════════════════════════════════════
+        //  PASSWORD STRENGTH METER (PRO)
+        //  Based on global rules:
+        //  - Length (8+ recommended, 12+ excellent)
+        //  - Uppercase, Lowercase, Number, Special
+        //  - No spaces
+        //  - No common patterns
+        // ═══════════════════════════════════════════
+        var COMMON_PASSWORDS = [
+            'password', '12345678', '123456789', 'qwerty', 'abc123',
+            'password1', '111111', '1234567', 'admin', 'letmein',
+            'welcome', 'monkey', 'dragon', 'master', '00000000'
+        ];
+
+        function checkPasswordRules(pw) {
+            return {
+                length: pw.length >= 8,
+                lengthExcellent: pw.length >= 12,
+                uppercase: /[A-Z]/.test(pw),
+                lowercase: /[a-z]/.test(pw),
+                number: /[0-9]/.test(pw),
+                special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(pw),
+                nospaces: !/\s/.test(pw) && pw.length > 0,
+                notCommon: !COMMON_PASSWORDS.includes(pw.toLowerCase()),
+                notRepeating: !/^(.)\1+$/.test(pw),
+                notSequential: !/(0123|1234|2345|3456|4567|5678|6789|abcd|qwer|asdf)/i.test(pw)
+            };
+        }
+
+        function calculatePasswordScore(pw) {
+            if (!pw || pw.length === 0) return { score: 0, level: 'none', label: '' };
+
+            var rules = checkPasswordRules(pw);
+            var score = 0;
+
+            // Required rules (each = 1 point)
+            if (rules.length) score++;
+            if (rules.uppercase) score++;
+            if (rules.lowercase) score++;
+            if (rules.number) score++;
+            if (rules.special) score++;
+            if (rules.nospaces) score++;
+
+            // Bonus rules
+            if (rules.lengthExcellent) score++;
+            if (rules.notCommon) score += 0.5;
+            if (rules.notRepeating) score += 0.5;
+            if (rules.notSequential) score += 0.5;
+
+            // Heavy penalty if common password
+            if (!rules.notCommon) score = Math.min(score, 1);
+
+            // Map to 5 levels
+            var level, label, segments;
+            if (score < 2) {
+                level = 'weak'; label = 'ضعيفة جداً'; segments = 1;
+            } else if (score < 4) {
+                level = 'fair'; label = 'ضعيفة'; segments = 2;
+            } else if (score < 6) {
+                level = 'good'; label = 'متوسطة'; segments = 3;
+            } else if (score < 7.5) {
+                level = 'strong'; label = 'قوية'; segments = 4;
+            } else {
+                level = 'excellent'; label = 'ممتازة'; segments = 5;
+            }
+
+            return { score: score, level: level, label: label, segments: segments, rules: rules };
+        }
+
+        function updatePasswordStrengthUI(pw) {
+            var wrapper = document.getElementById('password-strength');
+            var valueEl = document.getElementById('strength-value');
+
+            if (!wrapper || !valueEl) return;
+
+            // Show/hide meter based on input
+            if (!pw || pw.length === 0) {
+                wrapper.classList.remove('visible');
+                // Reset segments
+                document.querySelectorAll('.strength-segment').forEach(function(seg) {
+                    seg.className = 'strength-segment';
+                });
+                // Reset rules
+                document.querySelectorAll('.strength-rule').forEach(function(r) {
+                    r.classList.remove('met');
+                });
+                return;
+            }
+
+            wrapper.classList.add('visible');
+
+            var result = calculatePasswordScore(pw);
+
+            // Update segments
+            var segments = document.querySelectorAll('.strength-segment');
+            segments.forEach(function(seg, idx) {
+                seg.className = 'strength-segment';
+                if (idx < result.segments) {
+                    seg.classList.add('active-' + result.level);
+                }
+            });
+
+            // Update label
+            valueEl.textContent = result.label;
+            valueEl.className = 'strength-label-value ' + result.level;
+
+            // Update rules
+            var ruleMap = {
+                'length': result.rules.length,
+                'uppercase': result.rules.uppercase,
+                'lowercase': result.rules.lowercase,
+                'number': result.rules.number,
+                'special': result.rules.special,
+                'nospaces': result.rules.nospaces
+            };
+
+            Object.keys(ruleMap).forEach(function(key) {
+                var el = document.querySelector('.strength-rule[data-rule="' + key + '"]');
+                if (el) {
+                    if (ruleMap[key]) {
+                        el.classList.add('met');
+                    } else {
+                        el.classList.remove('met');
+                    }
+                }
+            });
+        }
+
+        function isPasswordAcceptable(pw) {
+            var rules = checkPasswordRules(pw);
+            // Required: length, uppercase, lowercase, number, nospaces, notCommon
+            return rules.length && rules.uppercase && rules.lowercase &&
+                   rules.number && rules.nospaces && rules.notCommon;
+        }
+
+        // Setup password input listeners
+        function setupPasswordInputs() {
+            var pwInput = document.getElementById('signup-password');
+            var confirmInput = document.getElementById('signup-confirm');
+            var confirmHint = document.getElementById('confirm-hint');
+
+            if (pwInput) {
+                pwInput.addEventListener('input', function(e) {
+                    updatePasswordStrengthUI(e.target.value);
+                    // Re-validate confirm match
+                    if (confirmInput && confirmInput.value) {
+                        validateConfirmMatch();
+                    }
+                });
+            }
+
+            function validateConfirmMatch() {
+                if (!confirmInput || !confirmHint || !pwInput) return;
+                var conf = confirmInput.value;
+                var pw = pwInput.value;
+                if (conf.length === 0) {
+                    confirmHint.style.display = 'none';
+                    return;
+                }
+                confirmHint.style.display = 'block';
+                if (conf === pw) {
+                    confirmHint.className = 'input-hint success';
+                    confirmHint.textContent = '✓ كلمتا المرور متطابقتان';
+                } else {
+                    confirmHint.className = 'input-hint error';
+                    confirmHint.textContent = '✗ كلمتا المرور غير متطابقتين';
+                }
+            }
+
+            if (confirmInput) {
+                confirmInput.addEventListener('input', validateConfirmMatch);
+            }
+        }
+
+        // ═══════════════════════════════════════════
+        //  SCROLL REVEAL ANIMATIONS
         // ═══════════════════════════════════════════
         function initScrollReveal() {
             var elements = document.querySelectorAll('.scroll-reveal');
             if (!('IntersectionObserver' in window)) {
-                // Fallback - just show everything
                 elements.forEach(function(el) { el.classList.add('revealed'); });
                 return;
             }
@@ -2078,8 +2589,6 @@
                 entries.forEach(function(entry) {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('revealed');
-                        // Optional: play subtle sound on reveal
-                        // playTick();
                         observer.unobserve(entry.target);
                     }
                 });
@@ -2119,7 +2628,7 @@
         }
 
         // ═══════════════════════════════════════════
-        //  3D TILT ON MOUSE MOVE (Feature Cards)
+        //  3D TILT (Feature Cards)
         // ═══════════════════════════════════════════
         function init3DTilt() {
             var cards = document.querySelectorAll('.feature-card');
@@ -2162,7 +2671,9 @@
             }
         };
 
-        // ═══ STATE ═══
+        // ═══════════════════════════════════════════
+        //  STATE
+        // ═══════════════════════════════════════════
         var _token = null;
 
         var _signupData = {
@@ -2170,7 +2681,6 @@
             password: '',
             student_type: 'علمي'
         };
-
 
         var _loginData = {
             username: '',
@@ -2190,7 +2700,9 @@
             'success-container'
         ];
 
-        // ═══ VIEW MANAGEMENT ═══
+        // ═══════════════════════════════════════════
+        //  VIEW MANAGEMENT
+        // ═══════════════════════════════════════════
         function hideAll() {
             for (var i = 0; i < ALL_VIEWS.length; i++) {
                 var el = document.getElementById(ALL_VIEWS[i]);
@@ -2213,7 +2725,6 @@
                     if (soundBtn) soundBtn.style.display = 'flex';
                     playWhoosh();
                     window.scrollTo(0, 0);
-                    // Re-init scroll reveal for main page
                     setTimeout(function() {
                         initScrollReveal();
                         initParallax();
@@ -2224,12 +2735,14 @@
                     show('signup-step1-container', 'flex');
                     if (soundBtn) soundBtn.style.display = 'flex';
                     playWhoosh();
+                    setupUsernameInput('signup-username', 'username-hint');
                     focusEl('signup-username');
                     break;
                 case 'signup-step2':
                     show('signup-step2-container', 'flex');
                     if (soundBtn) soundBtn.style.display = 'flex';
                     playWhoosh();
+                    setupPasswordInputs();
                     focusEl('signup-password');
                     break;
                 case 'verify':
@@ -2242,6 +2755,7 @@
                     show('login-username-container', 'flex');
                     if (soundBtn) soundBtn.style.display = 'flex';
                     playWhoosh();
+                    setupUsernameInput('login-username', null);
                     focusEl('login-username');
                     break;
                 case 'login-password':
@@ -2275,7 +2789,9 @@
             }, 150);
         }
 
-        // ═══ ERROR MANAGEMENT ═══
+        // ═══════════════════════════════════════════
+        //  ERROR MANAGEMENT
+        // ═══════════════════════════════════════════
         var ALL_ERRORS = [
             'main-error',
             'signup-step1-error',
@@ -2301,14 +2817,15 @@
             }
         }
 
-        // SIMPLIFIED LOADING - just one word + please wait
         function showLoading(msg) {
             var el = document.getElementById('loading-text');
             if (el) el.textContent = msg || 'لحظة من فضلك...';
             showView('loading');
         }
 
-        // ═══ TOKEN STORAGE ═══
+        // ═══════════════════════════════════════════
+        //  TOKEN STORAGE
+        // ═══════════════════════════════════════════
         function saveToken(token) {
             if (!token) return;
             try { localStorage.setItem('sc_device_token', token); } catch(e) {}
@@ -2419,12 +2936,10 @@
 
             var username = (document.getElementById('signup-username').value || '').trim();
 
-            if (!username) {
-                showError('signup-step1-error', 'يرجى إدخال اسم المستخدم');
-                return;
-            }
-            if (username.length < 3) {
-                showError('signup-step1-error', 'اسم المستخدم قصير جداً (3 أحرف على الأقل)');
+            // Client-side validation FIRST
+            var validation = validateUsername(username);
+            if (!validation.valid) {
+                showError('signup-step1-error', validation.reason);
                 return;
             }
 
@@ -2482,14 +2997,31 @@
                 showError('signup-step2-error', 'يرجى إدخال كلمة المرور وتأكيدها');
                 return;
             }
-            if (password.length < 6) {
-                showError('signup-step2-error', 'كلمة المرور قصيرة جداً (6 أحرف على الأقل)');
+
+            if (password.length < CONFIG.PASSWORD_MIN_LENGTH) {
+                showError('signup-step2-error', 'كلمة المرور قصيرة جداً (' + CONFIG.PASSWORD_MIN_LENGTH + ' أحرف على الأقل)');
                 return;
             }
+
+            // Check password strength against global rules
+            if (!isPasswordAcceptable(password)) {
+                var rules = checkPasswordRules(password);
+                var missing = [];
+                if (!rules.uppercase) missing.push('حرف كبير');
+                if (!rules.lowercase) missing.push('حرف صغير');
+                if (!rules.number) missing.push('رقم');
+                if (!rules.nospaces) missing.push('بدون مسافات');
+                if (!rules.notCommon) missing.push('كلمة مرور أكثر تعقيداً');
+
+                showError('signup-step2-error', 'كلمة المرور ضعيفة. تحتاج: ' + missing.join('، '));
+                return;
+            }
+
             if (password !== confirm) {
                 showError('signup-step2-error', 'كلمات المرور غير متطابقة!');
                 return;
             }
+
             if (!typeEl) {
                 showError('signup-step2-error', 'يرجى اختيار نوع الدراسة');
                 return;
@@ -2618,8 +3150,15 @@
                 showError('login-username-error', 'يرجى إدخال اسم المستخدم');
                 return;
             }
-            if (username.length < 3) {
+
+            // Quick client-side check
+            if (username.length < CONFIG.USERNAME_MIN_LENGTH) {
                 showError('login-username-error', 'اسم المستخدم قصير جداً');
+                return;
+            }
+
+            if (!CONFIG.USERNAME_PATTERN.test(username)) {
+                showError('login-username-error', 'اسم المستخدم يحتوي على أحرف غير صالحة');
                 return;
             }
 
@@ -2806,7 +3345,9 @@
             showView('main');
         }
 
-        // ═══ START ═══
+        // ═══════════════════════════════════════════
+        //  START
+        // ═══════════════════════════════════════════
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);
         } else {
